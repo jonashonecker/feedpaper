@@ -3,28 +3,15 @@
 Goal: produce an ePub while leaving every post unread on Feedbin.
 
 By default a run marks the included posts as read after it writes the ePub. To build
-without changing your unread state, add one flag.
-
-## Preview a build
-
-```bash
-feedpaper --dry-run
-```
-
-Builds the ePub and skips marking anything as read. Use this to test your setup or
-check the output.
-
-## Keep posts unread on a real build
+without changing your unread state, add `--keep-unread`:
 
 ```bash
 feedpaper --keep-unread
 ```
 
-Also builds the ePub without marking anything as read. Use it when you want a
-newspaper copy but intend to keep the posts in your Feedbin queue.
-
-Both flags leave every post unread. Run `feedpaper` with neither to build and mark
-the included posts as read.
+feedpaper builds the ePub and skips marking anything as read. Use it to test your
+setup, preview the output, or keep a copy while leaving the posts in your Feedbin
+queue. Run `feedpaper` without the flag to build and mark the included posts as read.
 
 ## Related
 

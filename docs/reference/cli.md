@@ -3,7 +3,7 @@
 ## Synopsis
 
 ```
-feedpaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
+feedpaper [-h] [-o OUTPUT] [--keep-unread]
           [--edit-excludes] [--list-feeds]
 ```
 
@@ -13,7 +13,6 @@ feedpaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
 |---|---|---|
 | `-h`, `--help` | Show the help message and exit. | — |
 | `-o`, `--output DIR` | Directory where feedpaper writes the ePub. | `.` |
-| `--dry-run` | Build the ePub without marking any posts as read. | off |
 | `--keep-unread` | Build the ePub without marking any posts as read. | off |
 | `--edit-excludes` | Pick blogs to exclude from a checklist and save them to `config.txt`. | — |
 | `--list-feeds` | Print subscribed feeds as `feed_id<TAB>title`, sorted by title, then exit. | — |

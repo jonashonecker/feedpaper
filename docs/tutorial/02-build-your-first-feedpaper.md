@@ -11,11 +11,11 @@ want the newspaper saved, and make sure you have a few unread posts in Feedbin.
 
 ## Step 1: Build the ePub
 
-For your first build, add `--dry-run`. It creates the ePub without changing
+For your first build, add `--keep-unread`. It creates the ePub without changing
 anything in Feedbin:
 
 ```bash
-feedpaper --dry-run
+feedpaper --keep-unread
 ```
 
 The first time you run feedpaper, it asks for your Feedbin email and password and
@@ -35,7 +35,7 @@ normally copy files, and open it. You're reading your first newspaper.
 
 ## Step 4: Do a real build
 
-Now run it without `--dry-run`:
+Now run it without `--keep-unread`:
 
 ```bash
 feedpaper

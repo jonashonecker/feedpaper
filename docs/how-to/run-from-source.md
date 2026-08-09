@@ -26,13 +26,13 @@ cp config.txt.example config.txt
 ## Run it
 
 ```bash
-feedpaper --dry-run
+feedpaper --keep-unread
 ```
 
 You can also run it without installing the console script:
 
 ```bash
-python -m feedpaper --dry-run
+python -m feedpaper --keep-unread
 ```
 
 ## Related

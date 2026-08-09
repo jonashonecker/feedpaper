@@ -23,14 +23,9 @@ def _parse_args(argv):
         "-o", "--output", default=".", help="Output directory (default: current dir)."
     )
     parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Build the ePub but do not mark entries as read.",
-    )
-    parser.add_argument(
         "--keep-unread",
         action="store_true",
-        help="Do not mark entries as read (keep them unread on Feedbin).",
+        help="Build the ePub but do not mark entries as read on Feedbin.",
     )
     parser.add_argument(
         "--edit-excludes",
@@ -128,9 +123,11 @@ def main(argv=None) -> int:
         return 1
 
     read_ids = [e["id"] for e in included]
-    if args.dry_run or args.keep_unread:
-        reason = "dry-run" if args.dry_run else "keep-unread"
-        print(f"Skipped marking as read ({reason}). {len(read_ids)} post(s) stay unread.")
+    if args.keep_unread:
+        print(
+            f"Skipped marking as read (--keep-unread). "
+            f"{len(read_ids)} post(s) stay unread."
+        )
         return 0
 
     try:
