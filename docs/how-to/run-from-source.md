@@ -1,6 +1,6 @@
 # Run feedpaper from source
 
-Goal: run `feedpaper` from a Python checkout instead of a downloaded binary — for
+Goal: run `feedpaper` from a Python checkout instead of a downloaded binary—for
 example to modify it or work on it.
 
 You need Python 3.10 or newer.

@@ -29,7 +29,7 @@ directory, the same as running from source.
 ## Note
 
 A PyInstaller binary only runs on the operating system it was built on. To produce
-binaries for macOS, Linux and Windows at once, push a version tag (`vX.Y.Z`) — the
+binaries for macOS, Linux and Windows at once, push a version tag (`vX.Y.Z`)—the
 `Release` GitHub Actions workflow builds all three and attaches them to the release.
 
 ## Related

@@ -10,7 +10,7 @@ first, so the `feedpaper` command works and your `.env` is in place. Open a term
 in the folder that holds your `.env`, and make sure you have a few unread posts in
 Feedbin.
 
-## Step 1 — Build the ePub
+## Step 1: Build the ePub
 
 For your first build, add `--dry-run`. It creates the ePub without changing
 anything in Feedbin:
@@ -22,18 +22,18 @@ feedpaper --dry-run
 You'll watch it authenticate, fetch your unread posts, and write a file named
 `feedpaper-YYYY-MM-DD.epub` into the current directory.
 
-## Step 2 — Open the newspaper
+## Step 2: Open the newspaper
 
 Open the `.epub` on your computer with any ePub reader (on macOS, Books works). You
-will see one chapter per post, newest first, each with a byline (author · blog ·
+see one chapter per post, newest first, each with a byline (author · blog ·
 date · source link) and images inline.
 
-## Step 3 — Copy it to your e-reader
+## Step 3: Copy it to your e-reader
 
 Transfer the `.epub` to your e-reader (for example the XTeink X4) the way you
 normally copy files, and open it. You're reading your first newspaper.
 
-## Step 4 — Do a real build
+## Step 4: Do a real build
 
 Now run it without `--dry-run`:
 

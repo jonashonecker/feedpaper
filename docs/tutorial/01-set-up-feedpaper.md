@@ -5,13 +5,13 @@ Feedbin account. By the end you'll have a working `feedpaper` command, ready to
 build your first newspaper in the
 [next tutorial](/docs/tutorial/02-build-your-first-feedpaper.md).
 
-You don't need Python — the download is a self-contained program.
+You don't need Python—the download is a self-contained program.
 
 ## Before you start
 
 You need a [Feedbin](https://feedbin.com) account.
 
-## Step 1 — Download the binary
+## Step 1: Download the binary
 
 Open the project's **Releases** page on GitHub
 (`https://github.com/jonashonecker/feedpaper/releases`) and download the file for your
@@ -21,7 +21,7 @@ operating system:
 - Linux → `feedpaper-linux`
 - Windows → `feedpaper-windows.exe`
 
-## Step 2 — Make it runnable
+## Step 2: Make it runnable
 
 **macOS**
 
@@ -43,7 +43,7 @@ sudo mv feedpaper-linux /usr/local/bin/feedpaper
 Rename `feedpaper-windows.exe` to `feedpaper.exe` and move it into a folder that's
 on your `PATH`.
 
-## Step 3 — Add your Feedbin credentials
+## Step 3: Add your Feedbin credentials
 
 In the folder where you'll run `feedpaper`, create a file named `.env`:
 
@@ -52,7 +52,7 @@ FEEDBIN_EMAIL=you@example.com
 FEEDBIN_PASSWORD=your-feedbin-password
 ```
 
-## Step 4 — Check the install
+## Step 4: Check the install
 
 ```bash
 feedpaper --help

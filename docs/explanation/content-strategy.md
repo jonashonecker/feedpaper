@@ -6,15 +6,15 @@ what text ends up in each chapter, and why.
 ## The partial-feed problem
 
 Feedbin gives every entry a `content` field, but its completeness depends on the
-publisher. Some blogs syndicate the whole article; others ship only a teaser — a
-first paragraph and a "Read more" link — expecting you to open the site. If the tool
+publisher. Some blogs syndicate the whole article; others ship only a teaser—a
+first paragraph and a "Read more" link—expecting you to open the site. If the tool
 naively used `content`, those posts would land in the newspaper truncated.
 
 ## Prefer inline content, fall back to extraction
 
 So `feedpaper` prefers the inline `content` and only reaches for a fallback when
 that content looks incomplete. The fallback is Feedbin's own full-text extraction:
-every entry carries an `extracted_content_url` — a pre-signed endpoint backed by
+every entry carries an `extracted_content_url`—a pre-signed endpoint backed by
 Mercury Parser that fetches the original page and returns cleaned full-text HTML.
 Because Feedbin already does this server-side, the tool never scrapes anything
 itself.
@@ -35,8 +35,8 @@ every post.
 
 ## Trade-offs
 
-The heuristic can occasionally be wrong — a genuinely short post might trigger an
+The heuristic can occasionally be wrong—a genuinely short post might trigger an
 unnecessary extraction, and an unusually worded teaser might slip through. It is
 tuned to be cheap and predictable rather than perfect. The thresholds live in
 `feedpaper/content.py` and are easy to adjust; a future refinement could let you
-mark specific blogs as "always extract".
+mark specific blogs as "always extract."

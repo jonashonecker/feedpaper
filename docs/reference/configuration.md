@@ -6,7 +6,7 @@ Credentials are read from a `.env` file in the working directory.
 
 | Key | Description |
 |---|---|
-| `FEEDBIN_EMAIL` | Email address of the Feedbin account. |
+| `FEEDBIN_EMAIL` | email address of the Feedbin account. |
 | `FEEDBIN_PASSWORD` | Password of the Feedbin account. |
 
 Both keys are required. A template is provided in `.env.example`.
