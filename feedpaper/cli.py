@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import argparse
 import sys
+from dataclasses import replace
 
 import requests
 
-from feedpaper.config import ConfigError, load_config
+from feedpaper.config import CONFIG_FILE, ConfigError, load_config, save_config
 from feedpaper.content import resolve_content
 from feedpaper.epub_builder import build_epub
-from feedpaper.exclusions import DEFAULT_EXCLUDE_FILE, is_excluded, load_excluded_titles
+from feedpaper.exclusions import is_excluded, normalize_titles
 from feedpaper.feedbin import FeedbinClient, FeedbinError
+from feedpaper.interactive import choose_excludes
 
 
 def _parse_args(argv):
@@ -31,18 +33,9 @@ def _parse_args(argv):
         help="Do not mark entries as read (keep them unread on Feedbin).",
     )
     parser.add_argument(
-        "--exclude",
-        action="append",
-        default=[],
-        metavar="TITLE",
-        help="Feed title to exclude from the ePub (repeatable). "
-        "Excluded posts stay unread on Feedbin.",
-    )
-    parser.add_argument(
-        "--exclude-file",
-        default=DEFAULT_EXCLUDE_FILE,
-        help=f"File listing feed titles to exclude, one per line "
-        f"(default: {DEFAULT_EXCLUDE_FILE}).",
+        "--edit-excludes",
+        action="store_true",
+        help="Pick which blogs to exclude from a checklist and save them to config.txt.",
     )
     parser.add_argument(
         "--list-feeds",
@@ -50,6 +43,19 @@ def _parse_args(argv):
         help="List your subscribed feeds (id and title) and exit.",
     )
     return parser.parse_args(argv)
+
+
+def _edit_excludes(config, feeds_by_id) -> int:
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        print("error: --edit-excludes needs an interactive terminal.", file=sys.stderr)
+        return 1
+    selected = choose_excludes(feeds_by_id, config.excluded)
+    if selected is None:
+        print("Cancelled; config.txt unchanged.")
+        return 0
+    save_config(replace(config, excluded=tuple(selected)))
+    print(f"Saved {len(selected)} excluded blog(s) to {CONFIG_FILE}.")
+    return 0
 
 
 def main(argv=None) -> int:
@@ -76,7 +82,10 @@ def main(argv=None) -> int:
                 print(f"{feed_id}\t{title}")
             return 0
 
-        excluded_titles = load_excluded_titles(args.exclude_file, args.exclude)
+        if args.edit_excludes:
+            return _edit_excludes(config, feeds_by_id)
+
+        excluded_titles = normalize_titles(config.excluded)
 
         unread_ids = client.get_unread_ids()
         if not unread_ids:

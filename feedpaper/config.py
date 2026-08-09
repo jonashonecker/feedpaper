@@ -8,6 +8,12 @@ from pathlib import Path
 
 CONFIG_FILE = "config.txt"
 
+_EXCLUDE_HINT = (
+    "\n# Exclude blogs from the newspaper. Use `feedpaper --edit-excludes` to pick\n"
+    "# them, or add lines by hand (one per blog):\n"
+    "# exclude = Hacker Newsletter\n"
+)
+
 
 class ConfigError(Exception):
     """Raised when required configuration is missing."""
@@ -17,24 +23,33 @@ class ConfigError(Exception):
 class Config:
     email: str
     password: str
+    excluded: tuple[str, ...] = ()
 
 
 def parse_config_file(path) -> Config:
     """Parse a ``key = value`` config file into a Config.
 
     Blank lines and lines starting with ``#`` are ignored. Keys are matched
-    case-insensitively; ``email`` and ``password`` are required.
+    case-insensitively; ``email`` and ``password`` are required, and ``exclude``
+    may appear multiple times (one blog title each).
     """
-    values: dict[str, str] = {}
+    email = ""
+    password = ""
+    excluded: list[str] = []
     for line in Path(path).read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, value = line.partition("=")
-        values[key.strip().lower()] = value.strip()
+        key = key.strip().lower()
+        value = value.strip()
+        if key == "email":
+            email = value
+        elif key == "password":
+            password = value
+        elif key == "exclude" and value:
+            excluded.append(value)
 
-    email = values.get("email", "")
-    password = values.get("password", "")
     missing = [
         name for name, value in (("email", email), ("password", password)) if not value
     ]
@@ -43,16 +58,22 @@ def parse_config_file(path) -> Config:
             f"{CONFIG_FILE} is missing: {', '.join(missing)}. "
             f"Each line should read 'email = ...' or 'password = ...'."
         )
-    return Config(email=email, password=password)
+    return Config(email=email, password=password, excluded=tuple(excluded))
 
 
-def _write_config_file(path, config) -> None:
-    Path(path).write_text(
-        "# feedpaper configuration.\n"
-        f"email = {config.email}\n"
-        f"password = {config.password}\n",
-        encoding="utf-8",
-    )
+def save_config(config, path=CONFIG_FILE) -> None:
+    """Write the config (email, password, and any exclude lines) to ``path``."""
+    lines = [
+        "# feedpaper configuration.",
+        f"email = {config.email}",
+        f"password = {config.password}",
+    ]
+    text = "\n".join(lines) + "\n"
+    if config.excluded:
+        text += "\n" + "".join(f"exclude = {title}\n" for title in config.excluded)
+    else:
+        text += _EXCLUDE_HINT
+    Path(path).write_text(text, encoding="utf-8")
     # The file holds a password, so restrict it to the owner.
     try:
         os.chmod(path, 0o600)
@@ -71,7 +92,7 @@ def interactive_setup(path) -> Config:
         password = getpass("Feedbin password: ").strip()
 
     config = Config(email=email, password=password)
-    _write_config_file(path, config)
+    save_config(config, path)
     print(f"Saved {path}.")
     return config
 

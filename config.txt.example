@@ -2,3 +2,7 @@
 # you can also edit it by hand.
 email = you@example.com
 password = your-feedbin-password
+
+# Exclude blogs from the newspaper. Use `feedpaper --edit-excludes` to pick them,
+# or add lines by hand (one per blog):
+# exclude = Hacker Newsletter

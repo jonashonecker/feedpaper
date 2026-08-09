@@ -8,6 +8,7 @@ dependencies = [
     "EbookLib>=0.18",
     "beautifulsoup4>=4.12",
     "lxml>=5.0",
+    "questionary>=2.0",
 ]
 
 [project.optional-dependencies]
