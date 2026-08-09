@@ -9,39 +9,21 @@ You don't need Python—the download is a self-contained program.
 
 ## Before you start
 
-You need a [Feedbin](https://feedbin.com) account.
+You need a [Feedbin](https://feedbin.com) account. feedpaper ships as an Apple
+Silicon macOS binary.
 
 ## Step 1: Download the binary
 
 Open the project's **Releases** page on GitHub
-(`https://github.com/jonashonecker/feedpaper/releases`) and download the file for your
-operating system:
-
-- macOS → `feedpaper-macos`
-- Linux → `feedpaper-linux`
-- Windows → `feedpaper-windows.exe`
+(`https://github.com/jonashonecker/feedpaper/releases`) and download `feedpaper-macos`.
 
 ## Step 2: Make it runnable
-
-**macOS**
 
 ```bash
 chmod +x feedpaper-macos
 xattr -d com.apple.quarantine feedpaper-macos   # clears the download warning
 sudo mv feedpaper-macos /usr/local/bin/feedpaper
 ```
-
-**Linux**
-
-```bash
-chmod +x feedpaper-linux
-sudo mv feedpaper-linux /usr/local/bin/feedpaper
-```
-
-**Windows**
-
-Rename `feedpaper-windows.exe` to `feedpaper.exe` and move it into a folder that's
-on your `PATH`.
 
 ## Step 3: Check the install
 
