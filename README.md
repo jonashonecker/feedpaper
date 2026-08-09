@@ -11,8 +11,8 @@ elsewhere can be excluded and left unread.
 >
 > Start here as a new user
 
-1. [Set up feedpaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
-2. [Build your first newspaper](/docs/tutorial/02-build-your-first-newspaper.md)
+1. [Set up feedpaper on your computer](/docs/tutorial/01-set-up-feedpaper.md)
+2. [Build your first newspaper](/docs/tutorial/02-build-your-first-feedpaper.md)
 
 ## 🔧 How-to
 >

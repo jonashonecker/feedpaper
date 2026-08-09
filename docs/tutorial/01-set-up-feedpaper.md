@@ -3,7 +3,7 @@
 In this tutorial you'll install the `feedpaper` command and connect it to your
 Feedbin account. By the end you'll have a working `feedpaper` command, ready to
 build your first newspaper in the
-[next tutorial](/docs/tutorial/02-build-your-first-newspaper.md).
+[next tutorial](/docs/tutorial/02-build-your-first-feedpaper.md).
 
 You don't need Python — the download is a self-contained program.
 
@@ -63,4 +63,4 @@ You'll see the usage message listing the available options. Your install works.
 ## What's next
 
 Continue with
-[Build your first newspaper](/docs/tutorial/02-build-your-first-newspaper.md).
+[Build your first newspaper](/docs/tutorial/02-build-your-first-feedpaper.md).
