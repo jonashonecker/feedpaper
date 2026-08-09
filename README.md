@@ -18,6 +18,7 @@ read elsewhere, and feedpaper leaves those unread.
 >
 > Practical step-by-step guides for the more experienced user
 
+- [Install without Homebrew](/docs/how-to/install-without-homebrew.md)
 - [Exclude blogs from your newspaper](/docs/how-to/exclude-blogs.md)
 - [Preview without marking posts as read](/docs/how-to/build-without-marking-read.md)
 - [Run feedpaper from source](/docs/how-to/run-from-source.md)

@@ -5,27 +5,21 @@ Feedbin account. By the end you'll have a working `feedpaper` command, ready to
 build your first newspaper in the
 [next tutorial](/docs/tutorial/02-build-your-first-feedpaper.md).
 
-You don't need Python—the download is a self-contained program.
-
 ## Before you start
 
-You need a [Feedbin](https://feedbin.com) account. feedpaper ships as an Apple
-Silicon macOS binary.
+You need a [Feedbin](https://feedbin.com) account and [Homebrew](https://brew.sh).
+feedpaper ships as an Apple Silicon macOS binary.
 
-## Step 1: Download the binary
-
-Open the project's **Releases** page on GitHub
-(`https://github.com/jonashonecker/feedpaper/releases`) and download `feedpaper-macos`.
-
-## Step 2: Make it runnable
+## Step 1: Install feedpaper
 
 ```bash
-chmod +x feedpaper-macos
-xattr -d com.apple.quarantine feedpaper-macos   # clears the download warning
-sudo mv feedpaper-macos /usr/local/bin/feedpaper
+brew install jonashonecker/tap/feedpaper
 ```
 
-## Step 3: Check the install
+Homebrew puts `feedpaper` on your `PATH` without the macOS "unidentified developer"
+warning, so there's nothing to unblock by hand.
+
+## Step 2: Check the install
 
 ```bash
 feedpaper --help
@@ -39,3 +33,6 @@ newspaper, so there's nothing else to set up now.
 
 Continue with
 [Build your first newspaper](/docs/tutorial/02-build-your-first-feedpaper.md).
+
+Prefer not to use Homebrew? See
+[Install without Homebrew](/docs/how-to/install-without-homebrew.md).
