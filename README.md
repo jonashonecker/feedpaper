@@ -2,10 +2,10 @@
 
 Turn your unread **Feedbin** blog posts into an **ePub newspaper** for your e-reader.
 
-`feedpaper` grabs every unread entry from your Feedbin account, builds a single
-ePub (one chapter per post, images embedded for offline reading), and—only after
-the ePub is safely written—marks those posts as read. Blogs you'd rather read
-elsewhere can be excluded and left unread.
+`feedpaper` grabs every unread entry from your Feedbin account and builds a single
+ePub—one chapter per post, with images embedded for offline reading. Only after it
+writes the ePub does it mark those posts as read. You can exclude blogs you'd rather
+read elsewhere, and feedpaper leaves those unread.
 
 ## 🌱 Tutorials
 >

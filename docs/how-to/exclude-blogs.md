@@ -16,15 +16,15 @@ This prints every subscription as `feed_id<TAB>title`, sorted by title.
 
 ## Exclude blogs on every run
 
-Create your personal exclusion list from the template (it stays local and is
-git-ignored):
+Create your personal exclusion list from the template. It stays local, and Git
+ignores it:
 
 ```bash
 cp excluded_feeds.txt.example excluded_feeds.txt
 ```
 
-Add one blog title per line. Blank lines and lines starting with `#` are ignored,
-and matching is case-insensitive:
+Add one blog title per line. feedpaper ignores blank lines and lines starting with
+`#`, and matches titles case-insensitively:
 
 ```
 # excluded_feeds.txt
@@ -36,7 +36,7 @@ Every run now skips those blogs.
 
 ## Exclude a blog for a single run
 
-To skip a blog once without editing the file, use `--exclude` (repeatable):
+To skip a blog once without editing the file, use `--exclude`, which you can repeat:
 
 ```bash
 feedpaper --exclude "Hacker Newsletter" --exclude "neal.fun"
@@ -48,7 +48,7 @@ feedpaper --exclude "Hacker Newsletter" --exclude "neal.fun"
 feedpaper --exclude-file ~/configs/skip-these.txt
 ```
 
-Titles from the file and any `--exclude` flags are combined.
+feedpaper combines titles from the file with any `--exclude` flags.
 
 ## Related
 

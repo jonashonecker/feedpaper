@@ -2,27 +2,27 @@
 
 ## `.env`
 
-Credentials are read from a `.env` file in the working directory.
+feedpaper reads credentials from a `.env` file in the working directory.
 
 | Key | Description |
 |---|---|
 | `FEEDBIN_EMAIL` | email address of the Feedbin account. |
 | `FEEDBIN_PASSWORD` | Password of the Feedbin account. |
 
-Both keys are required. A template is provided in `.env.example`.
+feedpaper needs both keys. `.env.example` provides a template.
 
 ## `excluded_feeds.txt`
 
-A list of blogs to exclude from the newspaper. The default path is
-`excluded_feeds.txt` in the working directory; a different path can be set with
-`--exclude-file`. A template is provided in `excluded_feeds.txt.example`, and the
-file is git-ignored.
+A list of blogs to exclude from the newspaper. By default feedpaper looks for
+`excluded_feeds.txt` in the working directory, and `--exclude-file` points it at
+another path. `excluded_feeds.txt.example` provides a template, and Git ignores the
+actual file.
 
 Format:
 
 - One feed title per line.
-- Blank lines and lines beginning with `#` are ignored.
-- Titles are matched case-insensitively against the feed title reported by Feedbin
-  (as listed by `feedpaper --list-feeds`).
+- feedpaper ignores blank lines and lines beginning with `#`.
+- feedpaper matches titles case-insensitively against the feed title Feedbin
+  reports, which `feedpaper --list-feeds` shows.
 
-Titles passed with `--exclude` are combined with the titles from this file.
+feedpaper combines titles passed with `--exclude` with the titles from this file.

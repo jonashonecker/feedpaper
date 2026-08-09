@@ -6,7 +6,7 @@ what text ends up in each chapter, and why.
 ## The partial-feed problem
 
 Feedbin gives every entry a `content` field, but its completeness depends on the
-publisher. Some blogs syndicate the whole article; others ship only a teaser—a
+publisher. Some blogs syndicate the whole article. Others ship only a teaser—a
 first paragraph and a "Read more" link—expecting you to open the site. If the tool
 naively used `content`, those posts would land in the newspaper truncated.
 
@@ -27,8 +27,8 @@ The decision, per post:
 
 ## What "looks truncated" means
 
-The truncation check is deliberately simple. Inline content is treated as incomplete
-when it is empty, shorter than about 500 characters of text, contains a
+The truncation check is deliberately simple. feedpaper treats inline content as
+incomplete when it's empty, shorter than about 500 characters of text, contains a
 "read more" / "continue reading" / "weiterlesen" style marker, or ends with an
 ellipsis. This favours full articles without making an extra network request for
 every post.
@@ -36,7 +36,7 @@ every post.
 ## Trade-offs
 
 The heuristic can occasionally be wrong—a genuinely short post might trigger an
-unnecessary extraction, and an unusually worded teaser might slip through. It is
-tuned to be cheap and predictable rather than perfect. The thresholds live in
-`feedpaper/content.py` and are easy to adjust; a future refinement could let you
+unnecessary extraction, and an unusually worded teaser might slip through. It aims
+for cheap, predictable behaviour rather than perfection. The thresholds live in
+`feedpaper/content.py`, and adjusting them is easy. A future refinement could let you
 mark specific blogs as "always extract."

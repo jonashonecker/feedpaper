@@ -24,13 +24,13 @@ You'll watch it authenticate, fetch your unread posts, and write a file named
 
 ## Step 2: Open the newspaper
 
-Open the `.epub` on your computer with any ePub reader (on macOS, Books works). You
-see one chapter per post, newest first, each with a byline (author · blog ·
-date · source link) and images inline.
+Open the `.epub` on your computer with any ePub reader. On macOS, Books works.
+You'll see one chapter per post, newest first, each with a byline—author · blog ·
+date · source link—and images inline.
 
 ## Step 3: Copy it to your e-reader
 
-Transfer the `.epub` to your e-reader (for example the XTeink X4) the way you
+Transfer the `.epub` to your e-reader, for example the XTeink X4, the way you
 normally copy files, and open it. You're reading your first newspaper.
 
 ## Step 4: Do a real build

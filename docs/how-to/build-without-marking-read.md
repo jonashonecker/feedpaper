@@ -2,7 +2,7 @@
 
 Goal: produce an ePub while leaving every post unread on Feedbin.
 
-By default a run marks the included posts as read once the ePub is written. To build
+By default a run marks the included posts as read after it writes the ePub. To build
 without changing your unread state, add one flag.
 
 ## Preview a build
