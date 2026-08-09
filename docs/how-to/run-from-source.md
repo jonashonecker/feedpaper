@@ -15,9 +15,12 @@ pip install -e .
 
 ## Add your credentials
 
+Run feedpaper once and it prompts for your email and password, or create the file
+from the template:
+
 ```bash
-cp .env.example .env
-# edit .env and set FEEDBIN_EMAIL and FEEDBIN_PASSWORD
+cp config.txt.example config.txt
+# edit config.txt and set email and password
 ```
 
 ## Run it

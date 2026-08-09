@@ -1,15 +1,17 @@
 # Configuration files
 
-## `.env`
+## `config.txt`
 
-feedpaper reads credentials from a `.env` file in the working directory.
+feedpaper reads your Feedbin credentials from `config.txt` in the working directory.
+It creates the file for you on first run, and you can edit it by hand later:
 
-| Key | Description |
-|---|---|
-| `FEEDBIN_EMAIL` | email address of the Feedbin account. |
-| `FEEDBIN_PASSWORD` | Password of the Feedbin account. |
+```
+email = you@example.com
+password = your-feedbin-password
+```
 
-feedpaper needs both keys. `.env.example` provides a template.
+feedpaper ignores blank lines and lines starting with `#`. Keep this file private:
+it stores your password in plain text, and Git ignores it by default.
 
 ## `excluded_feeds.txt`
 

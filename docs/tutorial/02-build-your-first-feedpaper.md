@@ -6,9 +6,8 @@ your e-reader. By the end you'll have a newspaper file on your device.
 ## Before you start
 
 Complete [Set up feedpaper on your computer](/docs/tutorial/01-set-up-feedpaper.md)
-first, so the `feedpaper` command works and your `.env` is in place. Open a terminal
-in the folder that holds your `.env`, and make sure you have a few unread posts in
-Feedbin.
+first, so the `feedpaper` command works. Open a terminal in the folder where you
+want the newspaper saved, and make sure you have a few unread posts in Feedbin.
 
 ## Step 1: Build the ePub
 
@@ -19,8 +18,9 @@ anything in Feedbin:
 feedpaper --dry-run
 ```
 
-You'll watch it authenticate, fetch your unread posts, and write a file named
-`feedpaper-YYYY-MM-DD.epub` into the current directory.
+The first time you run feedpaper, it asks for your Feedbin email and password and
+saves them to `config.txt`. Then it authenticates, fetches your unread posts, and
+writes a file named `feedpaper-YYYY-MM-DD.epub` into the current directory.
 
 ## Step 2: Open the newspaper
 

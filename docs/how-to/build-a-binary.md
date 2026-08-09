@@ -23,7 +23,7 @@ PyInstaller writes the executable to `dist/`:
 ./dist/feedpaper --help
 ```
 
-The binary reads `.env` and `excluded_feeds.txt` from the current working
+The binary reads `config.txt` and `excluded_feeds.txt` from the current working
 directory, the same as running from source.
 
 ## Note

@@ -43,22 +43,15 @@ sudo mv feedpaper-linux /usr/local/bin/feedpaper
 Rename `feedpaper-windows.exe` to `feedpaper.exe` and move it into a folder that's
 on your `PATH`.
 
-## Step 3: Add your Feedbin credentials
-
-In the folder where you'll run `feedpaper`, create a file named `.env`:
-
-```
-FEEDBIN_EMAIL=you@example.com
-FEEDBIN_PASSWORD=your-feedbin-password
-```
-
-## Step 4: Check the install
+## Step 3: Check the install
 
 ```bash
 feedpaper --help
 ```
 
 You'll see the usage message listing the available options. Your install works.
+feedpaper asks for your Feedbin email and password the first time you build a
+newspaper, so there's nothing else to set up now.
 
 ## What's next
 
