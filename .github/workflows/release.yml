@@ -1,7 +1,7 @@
 name: Release
 
-# Build standalone binaries for each OS and attach them to the GitHub release
-# whenever a version tag (e.g. v1.0.0) is pushed.
+# Build the macOS binary and attach it to the GitHub release whenever a
+# version tag (e.g. v1.0.0) is pushed.
 on:
   push:
     tags:
@@ -12,25 +12,8 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            name: macos
-            binary: feedpaper
-            asset: feedpaper-macos
-          - os: ubuntu-latest
-            name: linux
-            binary: feedpaper
-            asset: feedpaper-linux
-          - os: windows-latest
-            name: windows
-            binary: feedpaper.exe
-            asset: feedpaper-windows.exe
-
+    name: Build macOS
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -47,10 +30,9 @@ jobs:
         run: pyinstaller --onefile --name feedpaper feedpaper/__main__.py
 
       - name: Rename binary for the release
-        shell: bash
-        run: mv "dist/${{ matrix.binary }}" "dist/${{ matrix.asset }}"
+        run: mv dist/feedpaper dist/feedpaper-macos
 
       - name: Attach binary to the release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/${{ matrix.asset }}
+          files: dist/feedpaper-macos
