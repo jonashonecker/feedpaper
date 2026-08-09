@@ -14,7 +14,7 @@ You need a [Feedbin](https://feedbin.com) account.
 ## Step 1 — Download the binary
 
 Open the project's **Releases** page on GitHub
-(`https://github.com/<owner>/<repo>/releases`) and download the file for your
+(`https://github.com/jonashonecker/feedpaper/releases`) and download the file for your
 operating system:
 
 - macOS → `feedpaper-macos`
