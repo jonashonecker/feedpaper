@@ -1,7 +1,0 @@
-# Feeds to exclude from the newspaper (one feed title per line).
-# Matching is case-insensitive. Posts from these feeds are left out of the
-# ePub AND kept unread on Feedbin, so you can still read them elsewhere.
-#
-# Tip: run `newspaper --list-feeds` to see the exact titles.
-
-Hacker Newsletter

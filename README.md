@@ -17,6 +17,9 @@ pip install -e .
 
 cp .env.example .env
 # then edit .env with your Feedbin email and password
+
+# optional: set up your personal list of blogs to skip (kept local, git-ignored)
+cp excluded_feeds.txt.example excluded_feeds.txt
 ```
 
 ## Usage

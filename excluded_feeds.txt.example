@@ -1,0 +1,9 @@
+# Copy this file to excluded_feeds.txt and add the blogs you want to skip.
+#
+# One feed title per line. Matching is case-insensitive; '#' starts a comment.
+# Posts from these blogs are left out of the ePub AND kept unread on Feedbin,
+# so you can still read them elsewhere.
+#
+# Tip: run `newspaper --list-feeds` to see the exact titles.
+
+Hacker Newsletter
