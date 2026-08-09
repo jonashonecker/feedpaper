@@ -2,8 +2,9 @@
 
 ## `config.txt`
 
-feedpaper reads your Feedbin credentials from `config.txt` in the working directory.
-It creates the file for you on first run, and you can edit it by hand later:
+feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config.txt` (it
+honors `$XDG_CONFIG_HOME`). It creates the file for you on first run, and you can edit
+it by hand later:
 
 ```
 email = you@example.com

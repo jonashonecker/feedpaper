@@ -26,6 +26,15 @@ class Config:
     excluded: tuple[str, ...] = ()
 
 
+def config_path() -> Path:
+    """Path to config.txt in the user's config directory.
+
+    Honors ``$XDG_CONFIG_HOME`` and otherwise falls back to ``~/.config``.
+    """
+    base = os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config")
+    return Path(base) / "feedpaper" / CONFIG_FILE
+
+
 def parse_config_file(path) -> Config:
     """Parse a ``key = value`` config file into a Config.
 
@@ -55,14 +64,17 @@ def parse_config_file(path) -> Config:
     ]
     if missing:
         raise ConfigError(
-            f"{CONFIG_FILE} is missing: {', '.join(missing)}. "
+            f"{path} is missing: {', '.join(missing)}. "
             f"Each line should read 'email = ...' or 'password = ...'."
         )
     return Config(email=email, password=password, excluded=tuple(excluded))
 
 
-def save_config(config, path=CONFIG_FILE) -> None:
+def save_config(config, path=None) -> None:
     """Write the config (email, password, and any exclude lines) to ``path``."""
+    path = Path(path) if path is not None else config_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
     lines = [
         "# feedpaper configuration.",
         f"email = {config.email}",
@@ -73,7 +85,7 @@ def save_config(config, path=CONFIG_FILE) -> None:
         text += "\n" + "".join(f"exclude = {title}\n" for title in config.excluded)
     else:
         text += _EXCLUDE_HINT
-    Path(path).write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8")
     # The file holds a password, so restrict it to the owner.
     try:
         os.chmod(path, 0o600)
@@ -81,9 +93,10 @@ def save_config(config, path=CONFIG_FILE) -> None:
         pass
 
 
-def interactive_setup(path) -> Config:
+def interactive_setup(path=None) -> Config:
     """Prompt once for credentials and save them to the config file."""
-    print("No config yet — let's set it up.")
+    path = Path(path) if path is not None else config_path()
+    print(f"No config yet — let's set it up (saving to {path}).")
     email = ""
     while not email:
         email = input("Feedbin email: ").strip()
@@ -97,19 +110,20 @@ def interactive_setup(path) -> Config:
     return config
 
 
-def load_config(path=CONFIG_FILE) -> Config:
-    """Load Feedbin credentials from config.txt.
+def load_config(path=None) -> Config:
+    """Load Feedbin credentials from the user's config.txt.
 
-    Reads an existing ``config.txt``; otherwise runs the interactive first-run
-    prompt when in a terminal, and errors out when there's no way to ask.
+    Reads an existing config; otherwise runs the interactive first-run prompt when
+    in a terminal, and errors out when there's no way to ask.
     """
-    if Path(path).exists():
+    path = Path(path) if path is not None else config_path()
+    if path.exists():
         return parse_config_file(path)
 
     if sys.stdin.isatty() and sys.stdout.isatty():
         return interactive_setup(path)
 
     raise ConfigError(
-        f"No {CONFIG_FILE} found. Run feedpaper in a terminal to set it up, "
-        f"or create {CONFIG_FILE} with 'email = ...' and 'password = ...'."
+        f"No config found at {path}. Run feedpaper in a terminal to set it up, "
+        f"or create it with 'email = ...' and 'password = ...'."
     )

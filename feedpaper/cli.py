@@ -6,7 +6,7 @@ from dataclasses import replace
 
 import requests
 
-from feedpaper.config import CONFIG_FILE, ConfigError, load_config, save_config
+from feedpaper.config import ConfigError, config_path, load_config, save_config
 from feedpaper.content import resolve_content
 from feedpaper.epub_builder import build_epub
 from feedpaper.exclusions import is_excluded, normalize_titles
@@ -49,7 +49,7 @@ def _edit_excludes(config, feeds_by_id) -> int:
         print("Cancelled; config.txt unchanged.")
         return 0
     save_config(replace(config, excluded=tuple(selected)))
-    print(f"Saved {len(selected)} excluded blog(s) to {CONFIG_FILE}.")
+    print(f"Saved {len(selected)} excluded blog(s) to {config_path()}.")
     return 0
 
 
