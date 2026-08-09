@@ -1,0 +1,22 @@
+[project]
+name = "newspaper"
+version = "0.1.0"
+description = "Build an ePub newspaper from unread Feedbin blog posts"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "EbookLib>=0.18",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+newspaper = "newspaper.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["newspaper*"]

@@ -1,0 +1,9 @@
+.env
+*.epub
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
