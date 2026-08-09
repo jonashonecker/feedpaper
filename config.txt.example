@@ -1,0 +1,4 @@
+# feedpaper configuration. feedpaper creates this on first run;
+# you can also edit it by hand.
+email = you@example.com
+password = your-feedbin-password

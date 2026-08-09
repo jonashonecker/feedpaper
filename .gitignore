@@ -1,4 +1,5 @@
 .env
+config.txt
 excluded_feeds.txt
 *.epub
 __pycache__/
