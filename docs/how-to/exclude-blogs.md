@@ -3,52 +3,28 @@
 Goal: keep specific blogs out of your newspaper while leaving their posts unread on
 Feedbin, so you can still read them elsewhere.
 
-## Find the exact blog title
+## Pick blogs from a checklist
 
-Matching is by feed title, so you need the title exactly as Feedbin knows it. List
-all your subscribed blogs:
-
-```bash
-feedpaper --list-feeds
-```
-
-This prints every subscription as `feed_id<TAB>title`, sorted by title.
-
-## Exclude blogs on every run
-
-Create your personal exclusion list from the template. It stays local, and Git
-ignores it:
+Run:
 
 ```bash
-cp excluded_feeds.txt.example excluded_feeds.txt
+feedpaper --edit-excludes
 ```
 
-Add one blog title per line. feedpaper ignores blank lines and lines starting with
-`#`, and matches titles case-insensitively:
+feedpaper shows your subscribed blogs as a checklist and pre-ticks the ones you
+already exclude. Use the arrow keys to move, space to toggle a blog, and enter to
+save. feedpaper writes your choice to `config.txt`.
+
+## Edit the list by hand
+
+You can also add blogs directly in `config.txt`, one `exclude` line per blog:
 
 ```
-# excluded_feeds.txt
-Hacker Newsletter
-neal.fun
+exclude = Hacker Newsletter
+exclude = neal.fun
 ```
 
-Every run now skips those blogs.
-
-## Exclude a blog for a single run
-
-To skip a blog once without editing the file, use `--exclude`, which you can repeat:
-
-```bash
-feedpaper --exclude "Hacker Newsletter" --exclude "neal.fun"
-```
-
-## Use a different list file
-
-```bash
-feedpaper --exclude-file ~/configs/skip-these.txt
-```
-
-feedpaper combines titles from the file with any `--exclude` flags.
+feedpaper matches these titles case-insensitively against your subscribed blogs.
 
 ## Related
 

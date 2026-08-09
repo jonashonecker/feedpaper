@@ -13,18 +13,15 @@ password = your-feedbin-password
 feedpaper ignores blank lines and lines starting with `#`. Keep this file private:
 it stores your password in plain text, and Git ignores it by default.
 
-## `excluded_feeds.txt`
+### Excluding blogs
 
-A list of blogs to exclude from the newspaper. By default feedpaper looks for
-`excluded_feeds.txt` in the working directory, and `--exclude-file` points it at
-another path. `excluded_feeds.txt.example` provides a template, and Git ignores the
-actual file.
+Add an `exclude` line for each blog you want to keep out of the newspaper:
 
-Format:
+```
+exclude = Hacker Newsletter
+exclude = neal.fun
+```
 
-- One feed title per line.
-- feedpaper ignores blank lines and lines beginning with `#`.
-- feedpaper matches titles case-insensitively against the feed title Feedbin
-  reports, which `feedpaper --list-feeds` shows.
-
-feedpaper combines titles passed with `--exclude` with the titles from this file.
+feedpaper matches these titles case-insensitively against your subscribed blogs.
+`feedpaper --edit-excludes` lets you pick them from a checklist instead. Excluded
+blogs stay unread on Feedbin.

@@ -4,7 +4,7 @@
 
 ```
 feedpaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
-          [--exclude TITLE] [--exclude-file PATH] [--list-feeds]
+          [--edit-excludes] [--list-feeds]
 ```
 
 ## Options
@@ -15,8 +15,7 @@ feedpaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
 | `-o`, `--output DIR` | Directory where feedpaper writes the ePub. | `.` |
 | `--dry-run` | Build the ePub without marking any posts as read. | off |
 | `--keep-unread` | Build the ePub without marking any posts as read. | off |
-| `--exclude TITLE` | Exclude a blog by feed title. You can repeat this flag. | none |
-| `--exclude-file PATH` | File listing blog titles to exclude, one per line. | `excluded_feeds.txt` |
+| `--edit-excludes` | Pick blogs to exclude from a checklist and save them to `config.txt`. | — |
 | `--list-feeds` | Print subscribed feeds as `feed_id<TAB>title`, sorted by title, then exit. | — |
 
 ## Output
