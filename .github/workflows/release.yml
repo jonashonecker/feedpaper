@@ -1,7 +1,7 @@
 name: Release
 
 # Build the macOS binary and attach it to the GitHub release whenever a
-# version tag (e.g. v1.0.0) is pushed.
+# version tag (e.g. v1.0.0) is pushed, then update the Homebrew tap.
 on:
   push:
     tags:
@@ -36,3 +36,62 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/feedpaper-macos
+
+  update-tap:
+    name: Update Homebrew tap
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute version, url and sha256 from the release asset
+        id: meta
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/feedpaper-macos"
+          curl -fsSL --retry 5 --retry-delay 5 -o feedpaper-macos "$url"
+          sha=$(sha256sum feedpaper-macos | awk '{print $1}')
+          {
+            echo "tag=$tag"
+            echo "version=${tag#v}"
+            echo "url=$url"
+            echo "sha=$sha"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check out the Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: jonashonecker/homebrew-tap
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+          path: tap
+
+      - name: Write the formula
+        run: |
+          cat > tap/Formula/feedpaper.rb <<EOF
+          class Feedpaper < Formula
+            desc "Build an ePub newspaper from your unread Feedbin blog posts"
+            homepage "https://github.com/jonashonecker/feedpaper"
+            url "${{ steps.meta.outputs.url }}"
+            version "${{ steps.meta.outputs.version }}"
+            sha256 "${{ steps.meta.outputs.sha }}"
+
+            depends_on :macos
+            depends_on arch: :arm64
+
+            def install
+              bin.install "feedpaper-macos" => "feedpaper"
+            end
+
+            test do
+              assert_match "feedpaper", shell_output("#{bin}/feedpaper --help")
+            end
+          end
+          EOF
+
+      - name: Commit and push the formula
+        run: |
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/feedpaper.rb
+          git commit -m "chore: update feedpaper to ${{ steps.meta.outputs.tag }}" \
+            || echo "Formula already up to date."
+          git push
