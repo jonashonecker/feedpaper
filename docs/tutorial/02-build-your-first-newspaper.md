@@ -6,13 +6,9 @@ your e-reader. By the end you'll have a newspaper file on your device.
 ## Before you start
 
 Complete [Set up newspaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
-first, then activate your virtual environment:
-
-```bash
-source .venv/bin/activate
-```
-
-Make sure you have a few unread posts in Feedbin.
+first, so the `newspaper` command works and your `.env` is in place. Open a terminal
+in the folder that holds your `.env`, and make sure you have a few unread posts in
+Feedbin.
 
 ## Step 1 — Build the ePub
 

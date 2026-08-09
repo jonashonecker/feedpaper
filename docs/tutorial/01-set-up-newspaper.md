@@ -1,42 +1,51 @@
 # Set up newspaper on your computer
 
-In this tutorial you'll install `newspaper` and connect it to your Feedbin account.
-By the end you'll have a working command on your computer, ready to build your first
-newspaper in the [next tutorial](/docs/tutorial/02-build-your-first-newspaper.md).
+In this tutorial you'll install the `newspaper` command and connect it to your
+Feedbin account. By the end you'll have a working `newspaper` command, ready to
+build your first newspaper in the
+[next tutorial](/docs/tutorial/02-build-your-first-newspaper.md).
+
+You don't need Python — the download is a self-contained program.
 
 ## Before you start
 
-You need:
+You need a [Feedbin](https://feedbin.com) account.
 
-- Python 3.10 or newer
-- A [Feedbin](https://feedbin.com) account
+## Step 1 — Download the binary
 
-## Step 1 — Create a virtual environment
+Open the project's **Releases** page on GitHub
+(`https://github.com/<owner>/<repo>/releases`) and download the file for your
+operating system:
 
-From the project directory, create and activate a virtual environment:
+- macOS → `newspaper-macos`
+- Linux → `newspaper-linux`
+- Windows → `newspaper-windows.exe`
+
+## Step 2 — Make it runnable
+
+**macOS**
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+chmod +x newspaper-macos
+xattr -d com.apple.quarantine newspaper-macos   # clears the download warning
+sudo mv newspaper-macos /usr/local/bin/newspaper
 ```
 
-## Step 2 — Install newspaper
+**Linux**
 
 ```bash
-pip install -e .
+chmod +x newspaper-linux
+sudo mv newspaper-linux /usr/local/bin/newspaper
 ```
 
-This gives you a `newspaper` command inside the activated environment.
+**Windows**
+
+Rename `newspaper-windows.exe` to `newspaper.exe` and move it into a folder that's
+on your `PATH`.
 
 ## Step 3 — Add your Feedbin credentials
 
-Copy the template and open the new file:
-
-```bash
-cp .env.example .env
-```
-
-Fill in your Feedbin email and password:
+In the folder where you'll run `newspaper`, create a file named `.env`:
 
 ```
 FEEDBIN_EMAIL=you@example.com

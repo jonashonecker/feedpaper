@@ -20,6 +20,8 @@ elsewhere can be excluded and left unread.
 
 - [Exclude blogs from your newspaper](/docs/how-to/exclude-blogs.md)
 - [Preview without marking posts as read](/docs/how-to/build-without-marking-read.md)
+- [Run newspaper from source](/docs/how-to/run-from-source.md)
+- [Build a standalone binary](/docs/how-to/build-a-binary.md)
 
 ## 🔍 Reference
 >
