@@ -1,7 +1,7 @@
 # Build a standalone binary
 
-Goal: produce a single-file `feedpaper` executable for your platform, so it can run
-without a Python install.
+Goal: produce a standalone `feedpaper` build for your machine, so it can run without a
+Python install.
 
 ## Build it
 
@@ -9,28 +9,26 @@ From a source checkout with the build extra installed:
 
 ```bash
 pip install -e ".[build]"
-pyinstaller --onefile --name feedpaper feedpaper/__main__.py
+pyinstaller --onedir --name feedpaper feedpaper/__main__.py
 ```
 
-PyInstaller writes the executable to `dist/`:
-
-- macOS / Linux → `dist/feedpaper`
-- Windows → `dist/feedpaper.exe`
+PyInstaller writes the bundle to `dist/feedpaper/`: the `feedpaper` launcher plus an
+`_internal/` folder of libraries. Keep them together.
 
 ## Run it
 
 ```bash
-./dist/feedpaper --help
+./dist/feedpaper/feedpaper --help
 ```
 
-The binary reads `config.txt` from the current working directory, the same as
+feedpaper reads its configuration from `~/.config/feedpaper/config.txt`, the same as
 running from source.
 
 ## Note
 
-A PyInstaller binary only runs on the operating system where you built it. Pushing a
+A PyInstaller build only runs on the operating system where you built it. Pushing a
 version tag (`vX.Y.Z`) runs the `Release` GitHub Actions workflow, which builds the
-macOS binary and attaches it to the release.
+macOS bundle and attaches it to the release.
 
 ## Related
 

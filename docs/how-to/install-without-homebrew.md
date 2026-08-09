@@ -1,22 +1,30 @@
 # Install feedpaper without Homebrew
 
-Goal: install feedpaper straight from the release binary when you don't use Homebrew.
+Goal: install feedpaper straight from the release build when you don't use Homebrew.
 
-## Download the binary
+## Download and extract
 
 Open the [Releases page](https://github.com/jonashonecker/feedpaper/releases) and
-download `feedpaper-macos`.
-
-## Make it runnable
+download `feedpaper-macos.tar.gz`, then extract it:
 
 ```bash
-chmod +x feedpaper-macos
-xattr -d com.apple.quarantine feedpaper-macos   # clears the download warning
-sudo mv feedpaper-macos /usr/local/bin/feedpaper
+tar -xzf feedpaper-macos.tar.gz
 ```
 
-The `xattr` step clears the macOS download quarantine, so Gatekeeper stops blocking
-the binary. Then check it:
+This gives you a `feedpaper/` folder with the launcher and its libraries. Keep them
+together. The launcher needs the `_internal/` folder next to it.
+
+## Install it
+
+Move the folder to a stable location and link the launcher onto your `PATH`:
+
+```bash
+xattr -dr com.apple.quarantine feedpaper          # clears the download warning
+sudo mv feedpaper /usr/local/opt/feedpaper
+sudo ln -s /usr/local/opt/feedpaper/feedpaper /usr/local/bin/feedpaper
+```
+
+Then check it:
 
 ```bash
 feedpaper --help
