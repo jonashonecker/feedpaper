@@ -5,8 +5,8 @@ your e-reader. By the end you'll have a newspaper file on your device.
 
 ## Before you start
 
-Complete [Set up newspaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
-first, so the `newspaper` command works and your `.env` is in place. Open a terminal
+Complete [Set up feedpaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
+first, so the `feedpaper` command works and your `.env` is in place. Open a terminal
 in the folder that holds your `.env`, and make sure you have a few unread posts in
 Feedbin.
 
@@ -16,11 +16,11 @@ For your first build, add `--dry-run`. It creates the ePub without changing
 anything in Feedbin:
 
 ```bash
-newspaper --dry-run
+feedpaper --dry-run
 ```
 
 You'll watch it authenticate, fetch your unread posts, and write a file named
-`newspaper-YYYY-MM-DD.epub` into the current directory.
+`feedpaper-YYYY-MM-DD.epub` into the current directory.
 
 ## Step 2 — Open the newspaper
 
@@ -38,7 +38,7 @@ normally copy files, and open it. You're reading your first newspaper.
 Now run it without `--dry-run`:
 
 ```bash
-newspaper
+feedpaper
 ```
 
 This builds the newspaper again and marks the included posts as read in Feedbin, so

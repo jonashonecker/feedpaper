@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from ebooklib import epub
 
-from newspaper.content import sanitize_html
+from feedpaper.content import sanitize_html
 
 STYLE = """
 body { font-family: Georgia, serif; line-height: 1.5; margin: 5%; }
@@ -128,7 +128,7 @@ def build_epub(entries, feeds_by_id, session, out_dir, title=None) -> Path:
     title = title or f"Newspaper {today.isoformat()}"
 
     book = epub.EpubBook()
-    book.set_identifier(f"feedbin-newspaper-{today.isoformat()}")
+    book.set_identifier(f"feedpaper-{today.isoformat()}")
     book.set_title(title)
     book.set_language("en")
     book.add_author("Feedbin Newspaper")
@@ -161,6 +161,6 @@ def build_epub(entries, feeds_by_id, session, out_dir, title=None) -> Path:
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"newspaper-{today.isoformat()}.epub"
+    out_path = out_dir / f"feedpaper-{today.isoformat()}.epub"
     epub.write_epub(str(out_path), book)
     return out_path

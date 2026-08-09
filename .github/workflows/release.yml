@@ -20,16 +20,16 @@ jobs:
         include:
           - os: macos-latest
             name: macos
-            binary: newspaper
-            asset: newspaper-macos
+            binary: feedpaper
+            asset: feedpaper-macos
           - os: ubuntu-latest
             name: linux
-            binary: newspaper
-            asset: newspaper-linux
+            binary: feedpaper
+            asset: feedpaper-linux
           - os: windows-latest
             name: windows
-            binary: newspaper.exe
-            asset: newspaper-windows.exe
+            binary: feedpaper.exe
+            asset: feedpaper-windows.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
           pip install -e ".[build]"
 
       - name: Build binary
-        run: pyinstaller --onefile --name newspaper newspaper/__main__.py
+        run: pyinstaller --onefile --name feedpaper feedpaper/__main__.py
 
       - name: Rename binary for the release
         shell: bash

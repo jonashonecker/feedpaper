@@ -1,8 +1,8 @@
-# newspaper
+# feedpaper
 
 Turn your unread **Feedbin** blog posts into an **ePub newspaper** for your e-reader.
 
-`newspaper` grabs every unread entry from your Feedbin account, builds a single
+`feedpaper` grabs every unread entry from your Feedbin account, builds a single
 ePub (one chapter per post, images embedded for offline reading), and — only after
 the ePub is safely written — marks those posts as read. Blogs you'd rather read
 elsewhere can be excluded and left unread.
@@ -11,7 +11,7 @@ elsewhere can be excluded and left unread.
 >
 > Start here as a new user
 
-1. [Set up newspaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
+1. [Set up feedpaper on your computer](/docs/tutorial/01-set-up-newspaper.md)
 2. [Build your first newspaper](/docs/tutorial/02-build-your-first-newspaper.md)
 
 ## 🔧 How-to
@@ -20,7 +20,7 @@ elsewhere can be excluded and left unread.
 
 - [Exclude blogs from your newspaper](/docs/how-to/exclude-blogs.md)
 - [Preview without marking posts as read](/docs/how-to/build-without-marking-read.md)
-- [Run newspaper from source](/docs/how-to/run-from-source.md)
+- [Run feedpaper from source](/docs/how-to/run-from-source.md)
 - [Build a standalone binary](/docs/how-to/build-a-binary.md)
 
 ## 🔍 Reference

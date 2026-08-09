@@ -1,6 +1,6 @@
 # Content strategy: inline content vs. full-text extraction
 
-Feeds don't all deliver the same thing. This page explains how `newspaper` decides
+Feeds don't all deliver the same thing. This page explains how `feedpaper` decides
 what text ends up in each chapter, and why.
 
 ## The partial-feed problem
@@ -12,7 +12,7 @@ naively used `content`, those posts would land in the newspaper truncated.
 
 ## Prefer inline content, fall back to extraction
 
-So `newspaper` prefers the inline `content` and only reaches for a fallback when
+So `feedpaper` prefers the inline `content` and only reaches for a fallback when
 that content looks incomplete. The fallback is Feedbin's own full-text extraction:
 every entry carries an `extracted_content_url` — a pre-signed endpoint backed by
 Mercury Parser that fetches the original page and returns cleaned full-text HTML.
@@ -38,5 +38,5 @@ every post.
 The heuristic can occasionally be wrong — a genuinely short post might trigger an
 unnecessary extraction, and an unusually worded teaser might slip through. It is
 tuned to be cheap and predictable rather than perfect. The thresholds live in
-`newspaper/content.py` and are easy to adjust; a future refinement could let you
+`feedpaper/content.py` and are easy to adjust; a future refinement could let you
 mark specific blogs as "always extract".

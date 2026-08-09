@@ -9,7 +9,7 @@ Matching is by feed title, so you need the title exactly as Feedbin knows it. Li
 all your subscribed blogs:
 
 ```bash
-newspaper --list-feeds
+feedpaper --list-feeds
 ```
 
 This prints every subscription as `feed_id<TAB>title`, sorted by title.
@@ -39,13 +39,13 @@ Every run now skips those blogs.
 To skip a blog once without editing the file, use `--exclude` (repeatable):
 
 ```bash
-newspaper --exclude "Hacker Newsletter" --exclude "neal.fun"
+feedpaper --exclude "Hacker Newsletter" --exclude "neal.fun"
 ```
 
 ## Use a different list file
 
 ```bash
-newspaper --exclude-file ~/configs/skip-these.txt
+feedpaper --exclude-file ~/configs/skip-these.txt
 ```
 
 Titles from the file and any `--exclude` flags are combined.

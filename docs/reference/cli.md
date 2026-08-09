@@ -3,7 +3,7 @@
 ## Synopsis
 
 ```
-newspaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
+feedpaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
           [--exclude TITLE] [--exclude-file PATH] [--list-feeds]
 ```
 
@@ -21,7 +21,7 @@ newspaper [-h] [-o OUTPUT] [--dry-run] [--keep-unread]
 
 ## Output
 
-On a successful build a file named `newspaper-YYYY-MM-DD.epub` is written to the
+On a successful build a file named `feedpaper-YYYY-MM-DD.epub` is written to the
 output directory, where `YYYY-MM-DD` is the current date.
 
 ## Exit codes

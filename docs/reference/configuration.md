@@ -23,6 +23,6 @@ Format:
 - One feed title per line.
 - Blank lines and lines beginning with `#` are ignored.
 - Titles are matched case-insensitively against the feed title reported by Feedbin
-  (as listed by `newspaper --list-feeds`).
+  (as listed by `feedpaper --list-feeds`).
 
 Titles passed with `--exclude` are combined with the titles from this file.

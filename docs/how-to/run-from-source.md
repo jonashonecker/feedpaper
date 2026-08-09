@@ -1,6 +1,6 @@
-# Run newspaper from source
+# Run feedpaper from source
 
-Goal: run `newspaper` from a Python checkout instead of a downloaded binary — for
+Goal: run `feedpaper` from a Python checkout instead of a downloaded binary — for
 example to modify it or work on it.
 
 You need Python 3.10 or newer.
@@ -23,13 +23,13 @@ cp .env.example .env
 ## Run it
 
 ```bash
-newspaper --dry-run
+feedpaper --dry-run
 ```
 
 You can also run it without installing the console script:
 
 ```bash
-python -m newspaper --dry-run
+python -m feedpaper --dry-run
 ```
 
 ## Related

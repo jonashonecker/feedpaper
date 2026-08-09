@@ -5,16 +5,16 @@ import sys
 
 import requests
 
-from newspaper.config import ConfigError, load_config
-from newspaper.content import resolve_content
-from newspaper.epub_builder import build_epub
-from newspaper.exclusions import DEFAULT_EXCLUDE_FILE, is_excluded, load_excluded_titles
-from newspaper.feedbin import FeedbinClient, FeedbinError
+from feedpaper.config import ConfigError, load_config
+from feedpaper.content import resolve_content
+from feedpaper.epub_builder import build_epub
+from feedpaper.exclusions import DEFAULT_EXCLUDE_FILE, is_excluded, load_excluded_titles
+from feedpaper.feedbin import FeedbinClient, FeedbinError
 
 
 def _parse_args(argv):
     parser = argparse.ArgumentParser(
-        prog="newspaper",
+        prog="feedpaper",
         description="Build an ePub newspaper from unread Feedbin blog posts.",
     )
     parser.add_argument(
