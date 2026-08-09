@@ -9,3 +9,7 @@ venv/
 build/
 dist/
 *.spec
+
+# Vale: ignore downloaded style packages, keep our config and vocabulary
+.vale/styles/*
+!.vale/styles/config
