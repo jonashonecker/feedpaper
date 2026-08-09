@@ -11,6 +11,9 @@ dependencies = [
     "python-dotenv>=1.0",
 ]
 
+[project.optional-dependencies]
+build = ["pyinstaller>=6.0"]
+
 [project.scripts]
 newspaper = "newspaper.cli:main"
 

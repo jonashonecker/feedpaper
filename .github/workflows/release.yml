@@ -1,0 +1,56 @@
+name: Release
+
+# Build standalone binaries for each OS and attach them to the GitHub release
+# whenever a version tag (e.g. v1.0.0) is pushed.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos
+            binary: newspaper
+            asset: newspaper-macos
+          - os: ubuntu-latest
+            name: linux
+            binary: newspaper
+            asset: newspaper-linux
+          - os: windows-latest
+            name: windows
+            binary: newspaper.exe
+            asset: newspaper-windows.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install project and PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[build]"
+
+      - name: Build binary
+        run: pyinstaller --onefile --name newspaper newspaper/__main__.py
+
+      - name: Rename binary for the release
+        shell: bash
+        run: mv "dist/${{ matrix.binary }}" "dist/${{ matrix.asset }}"
+
+      - name: Attach binary to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.asset }}
