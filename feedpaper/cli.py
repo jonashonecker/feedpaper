@@ -6,6 +6,7 @@ from dataclasses import replace
 
 import requests
 
+from feedpaper import __version__
 from feedpaper.config import ConfigError, config_path, load_config, save_config
 from feedpaper.content import resolve_content
 from feedpaper.epub_builder import build_epub
@@ -18,6 +19,9 @@ def _parse_args(argv):
     parser = argparse.ArgumentParser(
         prog="feedpaper",
         description="Build an ePub newspaper from unread Feedbin blog posts.",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"feedpaper {__version__}"
     )
     parser.add_argument(
         "-o", "--output", default=".", help="Output directory (default: current dir)."
