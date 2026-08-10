@@ -32,3 +32,4 @@ the output directory, where `YYYY-MM-DD` is the current date.
 |---|---|
 | `0` | Success, including when there are no unread posts to build. |
 | `1` | An error occurred: missing credentials, a Feedbin API failure, or feedpaper built the ePub but couldn't mark posts as read. |
+| `2` | Invalid command-line usage, such as an unknown flag. |
