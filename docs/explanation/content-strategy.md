@@ -40,3 +40,7 @@ unnecessary extraction, and an unusually worded teaser might slip through. It ai
 for cheap, predictable behaviour rather than perfection. The thresholds live in
 `feedpaper/content.py`, and adjusting them is easy. A future refinement could let you
 mark specific blogs as "always extract."
+
+## Related
+
+- [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md)

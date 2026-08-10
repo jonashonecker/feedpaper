@@ -20,6 +20,7 @@ read elsewhere, and feedpaper leaves those unread.
 
 - [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
 - [Build a standalone binary](/docs/how-to/build-a-binary.md)
+- [Release a new version](/docs/how-to/release-a-new-version.md)
 
 ## 🔍 Reference
 >
