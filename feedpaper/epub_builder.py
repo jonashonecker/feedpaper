@@ -125,13 +125,13 @@ def _build_chapter(book, entry, feed_title, session, index, style_item, state):
 
 def build_epub(entries, feeds_by_id, session, out_dir, title=None) -> Path:
     today = date.today()
-    title = title or f"Newspaper {today.isoformat()}"
+    title = title or f"feedpaper {today.isoformat()}"
 
     book = epub.EpubBook()
     book.set_identifier(f"feedpaper-{today.isoformat()}")
     book.set_title(title)
     book.set_language("en")
-    book.add_author("Feedbin Newspaper")
+    book.add_author("feedpaper")
 
     style_item = epub.EpubItem(
         uid="style",
