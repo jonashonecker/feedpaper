@@ -1,4 +1,6 @@
-# feedpaper
+<p align="center">
+  <img src="docs/media/feedpaper-logo.svg" alt="feedpaper" width="260">
+</p>
 
 Turn your unread **Feedbin** blog posts into a single **ePub newspaper** for your
 e-reader, so you read your blogs on e-ink instead of a screen.
