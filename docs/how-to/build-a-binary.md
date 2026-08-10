@@ -21,7 +21,7 @@ PyInstaller writes the bundle to `dist/feedpaper/`: the `feedpaper` launcher plu
 ./dist/feedpaper/feedpaper --help
 ```
 
-feedpaper reads its configuration from `~/.config/feedpaper/config.txt`, the same as
+feedpaper reads its configuration from `~/.config/feedpaper/config`, the same as
 running from source.
 
 ## Note

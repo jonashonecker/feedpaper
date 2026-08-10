@@ -19,7 +19,8 @@ feedpaper --keep-unread
 ```
 
 The first time you run feedpaper, it asks for your Feedbin email and password and
-saves them to `config.txt`. Then it authenticates, fetches your unread posts, and
+saves them to `~/.config/feedpaper/config`. Then it authenticates, fetches your unread
+posts, and
 writes a file named `feedpaper-YYYY-MM-DD.epub` into the current directory.
 
 ## Step 2: Open the newspaper

@@ -30,7 +30,7 @@ def _parse_args(argv):
     parser.add_argument(
         "--edit-excludes",
         action="store_true",
-        help="Pick which blogs to exclude from a checklist and save them to config.txt.",
+        help="Pick which blogs to exclude from a checklist and save them to the config.",
     )
     parser.add_argument(
         "--list-feeds",
@@ -46,7 +46,7 @@ def _edit_excludes(config, feeds_by_id) -> int:
         return 1
     selected = choose_excludes(feeds_by_id, config.excluded)
     if selected is None:
-        print("Cancelled; config.txt unchanged.")
+        print("Cancelled; config unchanged.")
         return 0
     save_config(replace(config, excluded=tuple(selected)))
     print(f"Saved {len(selected)} excluded blog(s) to {config_path()}.")

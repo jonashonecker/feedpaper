@@ -1,4 +1,5 @@
 .env
+config
 config.txt
 excluded_feeds.txt
 *.epub

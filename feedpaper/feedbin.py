@@ -32,7 +32,7 @@ class FeedbinClient:
         if resp.status_code != 200:
             raise FeedbinError(
                 f"Feedbin authentication failed (HTTP {resp.status_code}). "
-                "Check your email and password in config.txt."
+                "Check your email and password in the config file."
             )
 
     def get_unread_ids(self) -> list[int]:

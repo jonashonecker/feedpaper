@@ -14,7 +14,7 @@ feedpaper [-h] [-o OUTPUT] [--keep-unread]
 | `-h`, `--help` | Show the help message and exit. | — |
 | `-o`, `--output DIR` | Directory where feedpaper writes the ePub. | `.` |
 | `--keep-unread` | Build the ePub without marking any posts as read. | off |
-| `--edit-excludes` | Pick blogs to exclude from a checklist and save them to `config.txt`. | — |
+| `--edit-excludes` | Pick blogs to exclude from a checklist and save them to `config`. | — |
 | `--list-feeds` | Print subscribed feeds as `feed_id<TAB>title`, sorted by title, then exit. | — |
 
 ## Output

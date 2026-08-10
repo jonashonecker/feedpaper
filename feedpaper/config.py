@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from getpass import getpass
 from pathlib import Path
 
-CONFIG_FILE = "config.txt"
+CONFIG_FILE = "config"
 
 _EXCLUDE_HINT = (
     "\n# Exclude blogs from the newspaper. Use `feedpaper --edit-excludes` to pick\n"
@@ -27,7 +27,7 @@ class Config:
 
 
 def config_path() -> Path:
-    """Path to config.txt in the user's config directory.
+    """Path to the config file in the user's config directory.
 
     Honors ``$XDG_CONFIG_HOME`` and otherwise falls back to ``~/.config``.
     """
@@ -111,12 +111,18 @@ def interactive_setup(path=None) -> Config:
 
 
 def load_config(path=None) -> Config:
-    """Load Feedbin credentials from the user's config.txt.
+    """Load Feedbin credentials from the user's config file.
 
     Reads an existing config; otherwise runs the interactive first-run prompt when
     in a terminal, and errors out when there's no way to ask.
     """
     path = Path(path) if path is not None else config_path()
+
+    # Migrate a legacy config.txt written by earlier versions.
+    legacy = path.parent / "config.txt"
+    if legacy != path and legacy.exists() and not path.exists():
+        legacy.rename(path)
+
     if path.exists():
         return parse_config_file(path)
 

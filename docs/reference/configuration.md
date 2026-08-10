@@ -1,8 +1,8 @@
 # Configuration files
 
-## `config.txt`
+## `config`
 
-feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config.txt` (it
+feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config` (it
 honors `$XDG_CONFIG_HOME`). It creates the file for you on first run, and you can edit
 it by hand later:
 

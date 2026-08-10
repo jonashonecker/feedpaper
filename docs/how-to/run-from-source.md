@@ -15,13 +15,8 @@ pip install -e .
 
 ## Add your credentials
 
-Run feedpaper once and it prompts for your email and password, or create the file
-from the template:
-
-```bash
-cp config.txt.example config.txt
-# edit config.txt and set email and password
-```
+The first time you run feedpaper, it prompts for your Feedbin email and password and
+saves them to `~/.config/feedpaper/config`.
 
 ## Run it
 

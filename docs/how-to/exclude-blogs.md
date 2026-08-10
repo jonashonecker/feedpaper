@@ -13,11 +13,11 @@ feedpaper --edit-excludes
 
 feedpaper shows your subscribed blogs as a checklist and pre-ticks the ones you
 already exclude. Use the arrow keys to move, space to toggle a blog, and enter to
-save. feedpaper writes your choice to `config.txt`.
+save. feedpaper writes your choice to `~/.config/feedpaper/config`.
 
 ## Edit the list by hand
 
-You can also add blogs directly in `config.txt`, one `exclude` line per blog:
+You can also add blogs directly in `~/.config/feedpaper/config`, one `exclude` line per blog:
 
 ```
 exclude = Hacker Newsletter
