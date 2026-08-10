@@ -6,17 +6,14 @@ your first newspaper in the
 
 ## Before you start
 
-You need a [Feedbin](https://feedbin.com) account and [Homebrew](https://brew.sh).
-feedpaper ships as an Apple Silicon macOS binary.
+You need an Apple Silicon Mac, a [Feedbin](https://feedbin.com) account, and
+[Homebrew](https://brew.sh).
 
 ## Install with Homebrew
 
 ```bash
 brew install jonashonecker/tap/feedpaper
 ```
-
-Homebrew puts `feedpaper` on your `PATH` without the macOS "unidentified developer"
-warning, so there's nothing to unblock by hand.
 
 ## Check the install
 

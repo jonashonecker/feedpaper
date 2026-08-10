@@ -2,23 +2,24 @@
 
 Turn your unread **Feedbin** blog posts into an **ePub newspaper** for your e-reader.
 
-`feedpaper` grabs every unread entry from your Feedbin account and builds a single
-ePub—one chapter per post, with images embedded for offline reading. Only after it
-writes the ePub does it mark those posts as read. You can exclude blogs you'd rather
-read elsewhere, and feedpaper leaves those unread.
+`feedpaper` collects every unread post and builds one ePub: a chapter per post, with
+images embedded for offline reading. It marks them read only after building the ePub, so
+next time you get just what's new. Exclude blogs you'd rather read elsewhere, and they
+stay unread.
 
 ## 🌱 Tutorials
 >
 > Start here as a new user
 
-1. [Install feedpaper](/docs/tutorial/install-feedpaper.md)
-2. [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md)
+- [Install feedpaper](/docs/tutorial/install-feedpaper.md)
+- [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md)
 
 ## 🔧 How-to
 >
 > Practical step-by-step guides for the more experienced user
 
 - [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [Uninstall feedpaper](/docs/how-to/uninstall-feedpaper.md)
 - [Build a standalone binary](/docs/how-to/build-a-binary.md)
 - [Release a new version](/docs/how-to/release-a-new-version.md)
 

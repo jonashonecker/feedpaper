@@ -1,6 +1,6 @@
 # Release a new version
 
-Goal: publish a new feedpaper version so Homebrew users get it with `brew upgrade`.
+Publish a new feedpaper version so Homebrew users get it with `brew upgrade`.
 
 ## Steps
 

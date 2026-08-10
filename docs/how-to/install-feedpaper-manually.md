@@ -1,6 +1,6 @@
 # Install feedpaper manually
 
-Goal: install feedpaper from source with Python instead of Homebrew.
+Install feedpaper from source with Python instead of Homebrew.
 
 You need Python 3.10 or newer and Git.
 

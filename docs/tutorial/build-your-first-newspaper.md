@@ -10,7 +10,7 @@ Install feedpaper first. See [Install feedpaper](/docs/tutorial/install-feedpape
 Open a terminal in the folder where you want the newspaper saved, and make sure you have
 a few unread posts in Feedbin.
 
-## Step 1: Connect to Feedbin
+## Connect to Feedbin
 
 The first time you run feedpaper, it asks for your Feedbin email and password and saves
 them to `~/.config/feedpaper/config`. Trigger that now by listing your blogs:
@@ -22,7 +22,7 @@ feedpaper --list-feeds
 feedpaper prompts for your email and password, keeping the password hidden, then prints
 the blogs you're subscribed to.
 
-## Step 2: Choose which blogs to skip
+## Choose which blogs to skip
 
 Some blogs don't read well as an ePub: link-only newsletters, or video and podcast feeds
 you'd rather open on your phone. Pick the ones to leave out:
@@ -39,7 +39,7 @@ can still read them elsewhere. You can also edit the `exclude` lines in
 For when this helps, see
 [Why excluding blogs helps](/docs/explanation/why-exclude-blogs.md).
 
-## Step 3: Build the ePub
+## Build the ePub
 
 For your first build, add `--keep-unread`. It creates the ePub without changing anything
 in Feedbin:
@@ -51,17 +51,17 @@ feedpaper --keep-unread
 feedpaper fetches your unread posts, skips the blogs you excluded, and writes a file
 named `feedpaper-YYYY-MM-DD.epub` into the current directory.
 
-## Step 4: Open the newspaper
+## Open the newspaper
 
 Open the `.epub` on your computer with any ePub reader. On macOS, Books works. You'll
 see one chapter per post, newest first. Each post has a byline and inline images.
 
-## Step 5: Copy it to your e-reader
+## Copy it to your e-reader
 
 Transfer the `.epub` to your e-reader, for example the XTeink X4, the way you normally
 copy files, and open it. You're reading your first newspaper.
 
-## Step 6: Do a real build
+## Do a real build
 
 Now run it without `--keep-unread`:
 

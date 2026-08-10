@@ -33,12 +33,3 @@ exclude = neal.fun
 feedpaper matches these titles case-insensitively against your subscribed blogs.
 `feedpaper --edit-excludes` lets you pick them from a checklist instead. Excluded
 blogs stay unread on Feedbin.
-
-## Removing feedpaper
-
-Uninstall with `brew uninstall feedpaper`. To remove your saved credentials too, delete
-the configuration directory:
-
-```bash
-rm -rf ~/.config/feedpaper
-```

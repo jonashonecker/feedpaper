@@ -1,7 +1,7 @@
 # Build a standalone binary
 
-Goal: produce a standalone `feedpaper` build for your machine, so it can run without a
-Python install.
+Produce a standalone `feedpaper` build for your machine, so it can run without a Python
+install.
 
 ## Build it
 
