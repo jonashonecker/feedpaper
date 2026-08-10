@@ -32,4 +32,4 @@ macOS bundle and attaches it to the release.
 
 ## Related
 
-- Run from a checkout: [Run feedpaper from source](/docs/how-to/run-from-source.md)
+- Install from source: [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)

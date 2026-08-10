@@ -11,17 +11,14 @@ read elsewhere, and feedpaper leaves those unread.
 >
 > Start here as a new user
 
-1. [Set up feedpaper on your computer](/docs/tutorial/01-set-up-feedpaper.md)
-2. [Build your first newspaper](/docs/tutorial/02-build-your-first-feedpaper.md)
+1. [Install feedpaper](/docs/tutorial/install-feedpaper.md)
+2. [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md)
 
 ## 🔧 How-to
 >
 > Practical step-by-step guides for the more experienced user
 
-- [Install without Homebrew](/docs/how-to/install-without-homebrew.md)
-- [Exclude blogs from your newspaper](/docs/how-to/exclude-blogs.md)
-- [Preview without marking posts as read](/docs/how-to/build-without-marking-read.md)
-- [Run feedpaper from source](/docs/how-to/run-from-source.md)
+- [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
 - [Build a standalone binary](/docs/how-to/build-a-binary.md)
 
 ## 🔍 Reference
@@ -36,3 +33,4 @@ read elsewhere, and feedpaper leaves those unread.
 > Explanation and analysis of some key concepts
 
 - [Content strategy: inline content vs. full-text extraction](/docs/explanation/content-strategy.md)
+- [Why excluding blogs helps](/docs/explanation/why-exclude-blogs.md)
