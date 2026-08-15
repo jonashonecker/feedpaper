@@ -2,18 +2,20 @@
 
 ## `config`
 
-feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config` (it
-honors `$XDG_CONFIG_HOME`). It creates the file for you on first run, and you can edit
-it by hand later:
+feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config` (it honors
+`$XDG_CONFIG_HOME`). On Windows this is
+`%USERPROFILE%\.config\feedpaper\config`. It creates the file for you on first run,
+and you can edit it by hand later:
 
 ```
 email = you@example.com
 password = your-feedbin-password
 ```
 
-feedpaper ignores blank lines and lines starting with `#`. It writes the file with
-owner-only permissions, mode 600, so only your account can read the plain-text
-password, and it lives in your home directory rather than in any project.
+feedpaper ignores blank lines and lines starting with `#`. On systems that support
+POSIX permissions, it writes the file with owner-only permissions, mode 600. On
+Windows, the file inherits the access controls of your user profile. The plain-text
+password lives in your home directory rather than in any project.
 
 If you used an older version, feedpaper renames a legacy `config.txt` to `config`
 automatically on first run.
