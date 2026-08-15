@@ -17,6 +17,7 @@ e-reader, so you read your blogs on e-ink instead of a screen.
 > Practical step-by-step guides for the more experienced user
 
 - [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [Install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
 - [Uninstall feedpaper](/docs/how-to/uninstall-feedpaper.md)
 - [Build a standalone binary](/docs/how-to/build-a-binary.md)
 - [Release a new version](/docs/how-to/release-a-new-version.md)

@@ -1,7 +1,7 @@
 name: Release
 
-# Build the macOS bundle and attach it to the GitHub release whenever a
-# version tag (e.g. v1.0.0) is pushed, then update the Homebrew tap.
+# Build macOS and Windows bundles and attach them to the GitHub release whenever
+# a version tag (e.g. v1.0.0) is pushed, then update the Homebrew tap.
 on:
   push:
     tags:
@@ -12,8 +12,17 @@ permissions:
 
 jobs:
   build:
-    name: Build macOS
-    runs-on: macos-latest
+    name: Build ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            asset: feedpaper-macos.tar.gz
+          - name: Windows
+            os: windows-latest
+            asset: feedpaper-windows-x64.zip
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,17 +38,39 @@ jobs:
       - name: Build bundle
         run: pyinstaller --onedir --name feedpaper feedpaper/__main__.py
 
-      - name: Package the bundle
+      - name: Package the macOS bundle
+        if: runner.os == 'macOS'
         run: tar -czf feedpaper-macos.tar.gz -C dist feedpaper
 
-      - name: Attach bundle to the release
+      - name: Package the Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist\feedpaper -DestinationPath feedpaper-windows-x64.zip
+
+      - name: Save bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ runner.os }}
+          path: ${{ matrix.asset }}
+
+  release:
+    name: Attach bundles
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bundle-*
+          merge-multiple: true
+
+      - name: Attach bundles to the release
         uses: softprops/action-gh-release@v2
         with:
-          files: feedpaper-macos.tar.gz
+          files: feedpaper-*
 
   update-tap:
     name: Update Homebrew tap
-    needs: build
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - name: Compute version, url and sha256 from the release asset
