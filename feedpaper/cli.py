@@ -7,18 +7,25 @@ from dataclasses import replace
 import requests
 
 from feedpaper import __version__
-from feedpaper.config import ConfigError, config_path, load_config, save_config
-from feedpaper.content import resolve_content
+from feedpaper.config import (
+    SERVICE_FEEDBIN,
+    ConfigError,
+    config_path,
+    load_config,
+    save_config,
+)
+from feedpaper.content import count_lines, resolve_content
 from feedpaper.epub_builder import build_epub
 from feedpaper.exclusions import is_excluded, normalize_titles
 from feedpaper.feedbin import FeedbinClient, FeedbinError
+from feedpaper.freshrss import FreshRSSClient, FreshRSSError
 from feedpaper.interactive import choose_excludes
 
 
 def _parse_args(argv):
     parser = argparse.ArgumentParser(
         prog="feedpaper",
-        description="Build an ePub newspaper from unread Feedbin blog posts.",
+        description="Build an ePub newspaper from unread Feedbin or FreshRSS blog posts.",
     )
     parser.add_argument(
         "--version", action="version", version=f"feedpaper {__version__}"
@@ -29,7 +36,7 @@ def _parse_args(argv):
     parser.add_argument(
         "--keep-unread",
         action="store_true",
-        help="Build the ePub but do not mark entries as read on Feedbin.",
+        help="Build the ePub but do not mark entries as read.",
     )
     parser.add_argument(
         "--edit-excludes",
@@ -66,11 +73,16 @@ def main(argv=None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    client = FeedbinClient(config.email, config.password)
+    if config.service == SERVICE_FEEDBIN:
+        client = FeedbinClient(config.email, config.password)
+        service_name = "Feedbin"
+    else:
+        client = FreshRSSClient(config.url, config.user, config.password)
+        service_name = "FreshRSS"
 
     try:
         client.verify()
-        print("Authenticated with Feedbin.")
+        print(f"Authenticated with {service_name}.")
 
         feeds_by_id = client.get_feeds()
 
@@ -119,10 +131,28 @@ def main(argv=None) -> int:
             entry["_resolved_content"] = resolve_content(client, entry)
             print(f"  [{i}/{len(included)}] {entry.get('title') or '(untitled)'}")
 
+        if isinstance(client, FreshRSSClient) and config.fetch_full_content:
+            short = [
+                e for e in included if count_lines(e["_resolved_content"]) < config.min_lines
+            ]
+            if short:
+                print(f"Fetching full article content for {len(short)} short post(s)...")
+                for i, entry in enumerate(short, 1):
+                    fetched = client.fetch_full_content(entry.get("url"))
+                    title = entry.get("title") or "(untitled)"
+                    if fetched and fetched.strip():
+                        entry["_resolved_content"] = fetched
+                        print(f"  [{i}/{len(short)}] fetched: {title}")
+                    else:
+                        print(
+                            f"  [{i}/{len(short)}] kept short content (fetch failed or "
+                            f"blocked by the site): {title}"
+                        )
+
         print("Building ePub...")
         out_path = build_epub(included, feeds_by_id, client.session, args.output)
         print(f"Wrote {out_path}")
-    except (FeedbinError, requests.RequestException) as exc:
+    except (FeedbinError, FreshRSSError, requests.RequestException) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
@@ -136,8 +166,8 @@ def main(argv=None) -> int:
 
     try:
         client.mark_as_read(read_ids)
-        print(f"Marked {len(read_ids)} post(s) as read on Feedbin.")
-    except (FeedbinError, requests.RequestException) as exc:
+        print(f"Marked {len(read_ids)} post(s) as read on {service_name}.")
+    except (FeedbinError, FreshRSSError, requests.RequestException) as exc:
         print(f"warning: ePub built but failed to mark as read: {exc}", file=sys.stderr)
         return 1
 

@@ -6,8 +6,8 @@ your first newspaper in the
 
 ## Before you start
 
-You need an Apple Silicon Mac, a [Feedbin](https://feedbin.com) account, and
-[Homebrew](https://brew.sh).
+You need an Apple Silicon Mac, [Homebrew](https://brew.sh), and either a
+[Feedbin](https://feedbin.com) account or a [FreshRSS](https://freshrss.org) instance.
 
 ## Install with Homebrew
 

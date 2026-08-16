@@ -30,6 +30,17 @@ def _looks_truncated(html: str) -> bool:
     return False
 
 
+def count_lines(html: str) -> int:
+    """Count non-blank lines of visible text in `html`.
+
+    Used to gauge how substantial an entry's inline content is (e.g. a one-line
+    teaser vs. a full article), independent of the character-based truncation
+    check above.
+    """
+    text = BeautifulSoup(html or "", "lxml").get_text(separator="\n")
+    return len([line for line in text.splitlines() if line.strip()])
+
+
 def resolve_content(client, entry) -> str:
     """Pick the best available content for an entry.
 
