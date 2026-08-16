@@ -4,9 +4,15 @@ import hashlib
 from datetime import datetime, timezone
 
 import requests
+from bs4 import BeautifulSoup
 
 DEFAULT_TIMEOUT = 30
 ITEMS_CHUNK = 50  # FreshRSS's Fever endpoint caps items per request at 50, even with `with_ids`
+
+# Stripped before hunting for the article body, so they can't win the "biggest
+# text block" heuristic below.
+_NON_CONTENT_TAGS = ["script", "style", "nav", "header", "footer", "aside", "noscript", "form", "iframe"]
+_MIN_ARTICLE_CHARS = 200  # below this, treat extraction as having failed
 
 
 class FreshRSSError(Exception):
@@ -16,6 +22,29 @@ class FreshRSSError(Exception):
 def _chunked(items, size):
     for i in range(0, len(items), size):
         yield items[i : i + size]
+
+
+def _extract_article_html(page_html: str) -> str | None:
+    """Pull the likely article body out of a full webpage's HTML.
+
+    FreshRSS's Fever API has no full-text-extraction endpoint (unlike Feedbin's
+    `extracted_content_url`), so when `fetch_full_content` is enabled feedpaper
+    scrapes the linked page itself. This is a simple heuristic, not a real
+    readability algorithm: prefer an `<article>` / `<main>` / role="main"
+    element, and otherwise fall back to the div/section with the most text.
+    """
+    soup = BeautifulSoup(page_html or "", "lxml")
+    for tag in soup(_NON_CONTENT_TAGS):
+        tag.decompose()
+
+    candidate = soup.find("article") or soup.find("main") or soup.find(attrs={"role": "main"})
+    if candidate is None:
+        containers = soup.find_all(["div", "section"])
+        candidate = max(containers, key=lambda t: len(t.get_text(strip=True)), default=None)
+
+    if candidate is None or len(candidate.get_text(strip=True)) < _MIN_ARTICLE_CHARS:
+        return None
+    return candidate.decode_contents()
 
 
 def _normalize_entry(item: dict) -> dict:
@@ -95,6 +124,21 @@ class FreshRSSClient:
     def get_extracted_content(self, url) -> str | None:
         """FreshRSS's Fever API has no full-content extraction endpoint."""
         return None
+
+    def fetch_full_content(self, url) -> str | None:
+        """Fetch the article page behind `url` and extract its main content.
+
+        Only used when `fetch_full_content` is enabled in the config. Returns
+        None on any request failure or if no substantial article body is found.
+        """
+        if not url:
+            return None
+        try:
+            resp = self.session.get(url, timeout=self.timeout)
+            resp.raise_for_status()
+        except requests.RequestException:
+            return None
+        return _extract_article_html(resp.text)
 
     def mark_as_read(self, ids) -> None:
         """Mark the given entry ids as read (in chunks of 50)."""

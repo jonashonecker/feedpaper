@@ -14,7 +14,7 @@ from feedpaper.config import (
     load_config,
     save_config,
 )
-from feedpaper.content import resolve_content
+from feedpaper.content import count_lines, resolve_content
 from feedpaper.epub_builder import build_epub
 from feedpaper.exclusions import is_excluded, normalize_titles
 from feedpaper.feedbin import FeedbinClient, FeedbinError
@@ -130,6 +130,24 @@ def main(argv=None) -> int:
         for i, entry in enumerate(included, 1):
             entry["_resolved_content"] = resolve_content(client, entry)
             print(f"  [{i}/{len(included)}] {entry.get('title') or '(untitled)'}")
+
+        if isinstance(client, FreshRSSClient) and config.fetch_full_content:
+            short = [
+                e for e in included if count_lines(e["_resolved_content"]) < config.min_lines
+            ]
+            if short:
+                print(f"Fetching full article content for {len(short)} short post(s)...")
+                for i, entry in enumerate(short, 1):
+                    fetched = client.fetch_full_content(entry.get("url"))
+                    title = entry.get("title") or "(untitled)"
+                    if fetched and fetched.strip():
+                        entry["_resolved_content"] = fetched
+                        print(f"  [{i}/{len(short)}] fetched: {title}")
+                    else:
+                        print(
+                            f"  [{i}/{len(short)}] kept short content (fetch failed or "
+                            f"blocked by the site): {title}"
+                        )
 
         print("Building ePub...")
         out_path = build_epub(included, feeds_by_id, client.session, args.output)

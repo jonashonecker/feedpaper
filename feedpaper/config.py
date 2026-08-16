@@ -12,6 +12,9 @@ SERVICE_FEEDBIN = "feedbin"
 SERVICE_FRESHRSS = "freshrss"
 SERVICES = (SERVICE_FEEDBIN, SERVICE_FRESHRSS)
 
+DEFAULT_MIN_LINES = 4
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+
 _EXCLUDE_HINT = (
     "\n# Exclude blogs from the newspaper. Use `feedpaper --edit-excludes` to pick\n"
     "# them, or add lines by hand (one per blog):\n"
@@ -31,6 +34,8 @@ class Config:
     url: str = ""  # FreshRSS only: the Fever API endpoint (.../api/fever.php)
     user: str = ""  # FreshRSS only
     excluded: tuple[str, ...] = ()
+    fetch_full_content: bool = False  # FreshRSS only: scrape the linked article
+    min_lines: int = DEFAULT_MIN_LINES  # FreshRSS only: threshold for fetch_full_content
 
 
 def config_path() -> Path:
@@ -50,7 +55,9 @@ def parse_config_file(path) -> Config:
     each). ``service`` selects the backend (``feedbin``, the default for configs
     written by older versions, or ``freshrss``); it determines which of
     ``email``/``password`` (Feedbin) or ``url``/``user``/``password`` (FreshRSS)
-    are required.
+    are required. ``fetch_full_content`` and ``min_lines`` are FreshRSS-only: when
+    ``fetch_full_content`` is true, feedpaper scrapes the linked article for any post
+    whose inline content has fewer than ``min_lines`` lines of text.
     """
     service = SERVICE_FEEDBIN
     email = ""
@@ -58,6 +65,8 @@ def parse_config_file(path) -> Config:
     url = ""
     user = ""
     excluded: list[str] = []
+    fetch_full_content = False
+    min_lines = DEFAULT_MIN_LINES
     for line in Path(path).read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
@@ -77,6 +86,21 @@ def parse_config_file(path) -> Config:
             user = value
         elif key == "exclude" and value:
             excluded.append(value)
+        elif key == "fetch_full_content":
+            fetch_full_content = value.lower() in _TRUE_VALUES
+        elif key == "min_lines":
+            try:
+                min_lines = int(value)
+            except ValueError:
+                raise ConfigError(
+                    f"{path} has an invalid 'min_lines' value '{value}'; expected a "
+                    "whole number."
+                )
+            if min_lines <= 0:
+                raise ConfigError(
+                    f"{path} has an invalid 'min_lines' value '{value}'; expected a "
+                    "positive whole number."
+                )
 
     if service not in SERVICES:
         raise ConfigError(
@@ -103,6 +127,8 @@ def parse_config_file(path) -> Config:
         url=url,
         user=user,
         excluded=tuple(excluded),
+        fetch_full_content=fetch_full_content,
+        min_lines=min_lines,
     )
 
 
@@ -119,6 +145,8 @@ def save_config(config, path=None) -> None:
         lines.append(f"url = {config.url}")
         lines.append(f"user = {config.user}")
         lines.append(f"password = {config.password}")
+        lines.append(f"fetch_full_content = {'true' if config.fetch_full_content else 'false'}")
+        lines.append(f"min_lines = {config.min_lines}")
     text = "\n".join(lines) + "\n"
     if config.excluded:
         text += "\n" + "".join(f"exclude = {title}\n" for title in config.excluded)
@@ -152,7 +180,32 @@ def _prompt_freshrss() -> Config:
     password = ""
     while not password:
         password = getpass("FreshRSS API password: ").strip()
-    return Config(service=SERVICE_FRESHRSS, url=url, user=user, password=password)
+
+    fetch_full_content = input(
+        "Auto-fetch the full article when a post's inline content looks short? [y/N]: "
+    ).strip().lower() in ("y", "yes")
+    min_lines = DEFAULT_MIN_LINES
+    if fetch_full_content:
+        raw = input(
+            f"Fetch the full article when inline content has fewer than how many lines? "
+            f"[{DEFAULT_MIN_LINES}]: "
+        ).strip()
+        if raw:
+            try:
+                min_lines = int(raw)
+            except ValueError:
+                min_lines = DEFAULT_MIN_LINES
+            if min_lines <= 0:
+                min_lines = DEFAULT_MIN_LINES
+
+    return Config(
+        service=SERVICE_FRESHRSS,
+        url=url,
+        user=user,
+        password=password,
+        fetch_full_content=fetch_full_content,
+        min_lines=min_lines,
+    )
 
 
 def interactive_setup(path=None) -> Config:

@@ -30,6 +30,8 @@ service = freshrss
 url = https://rss.example.net/api/fever.php
 user = your-freshrss-username
 password = your-freshrss-api-password
+fetch_full_content = false
+min_lines = 4
 ```
 
 `url` is your FreshRSS instance's Fever API endpoint, not your account login page.
@@ -49,6 +51,16 @@ feedpaper uses FreshRSS's [Fever-compatible
 API](https://freshrss.github.io/FreshRSS/en/developers/06_Fever_API.html), not the
 Google Reader-compatible one, since it covers everything feedpaper needs (unread posts,
 content, marking as read) with a simpler request/response shape.
+
+#### Fetching full articles
+
+The Fever API has no full-text-extraction endpoint, so short or teaser-only posts stay
+short in the newspaper by default. Set `fetch_full_content = true` to have feedpaper
+fetch the linked article page itself and extract its main content whenever a post's
+inline content has fewer than `min_lines` lines of text (default `4`). This is off by
+default since it makes an extra request per short post and its extraction is a
+heuristic, not a full readability engine. See [Content strategy](/docs/explanation/content-strategy.md)
+for details and trade-offs.
 
 ### Changing credentials
 
