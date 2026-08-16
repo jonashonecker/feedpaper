@@ -22,8 +22,9 @@ This puts a `feedpaper` command on your `PATH` while the virtual environment is 
 feedpaper --help
 ```
 
-The first real run prompts for your Feedbin email and password and saves them to
-`~/.config/feedpaper/config`, the same as the Homebrew install.
+The first real run prompts for which service you use (Feedbin or FreshRSS) and its
+credentials, and saves them to `~/.config/feedpaper/config`, the same as the Homebrew
+install.
 
 ## Related
 

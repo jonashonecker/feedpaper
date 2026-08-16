@@ -2,14 +2,11 @@
 
 ## `config`
 
-feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config` (it
-honors `$XDG_CONFIG_HOME`). It creates the file for you on first run, and you can edit
-it by hand later:
-
-```
-email = you@example.com
-password = your-feedbin-password
-```
+feedpaper stores your credentials in `~/.config/feedpaper/config` (it honors
+`$XDG_CONFIG_HOME`). It creates the file for you on first run, and you can edit it by
+hand later. The first line that matters is `service`, which selects the backend:
+`feedbin` or `freshrss`. Configs written by feedpaper versions before FreshRSS support
+have no `service` line; feedpaper treats those as `feedbin`.
 
 feedpaper ignores blank lines and lines starting with `#`. It writes the file with
 owner-only permissions, mode 600, so only your account can read the plain-text
@@ -18,8 +15,46 @@ password, and it lives in your home directory rather than in any project.
 If you used an older version, feedpaper renames a legacy `config.txt` to `config`
 automatically on first run.
 
-To change your credentials, edit `email` or `password` in the file. Or delete the file,
-and feedpaper prompts you for new ones on the next run.
+### Feedbin
+
+```
+service = feedbin
+email = you@example.com
+password = your-feedbin-password
+```
+
+### FreshRSS
+
+```
+service = freshrss
+url = https://rss.example.net/api/fever.php
+user = your-freshrss-username
+password = your-freshrss-api-password
+```
+
+`url` is your FreshRSS instance's Fever API endpoint, not your account login page.
+feedpaper needs the `password` to be the **API password**, not your regular FreshRSS
+login password:
+
+1. In FreshRSS, enable "Allow API access (required for mobile apps)" under
+   **Settings → Authentication**.
+2. Set an "API password (e.g., for mobile apps)" under **Settings → Profile**. FreshRSS
+   shows your API address (ending in `api/fever.php` or `api/greader.php`, depending on
+   the client) right next to it — use the `fever.php` one for `url`.
+
+See FreshRSS's own [mobile access
+docs](https://freshrss.github.io/FreshRSS/en/users/06_Mobile_access.html) for more.
+
+feedpaper uses FreshRSS's [Fever-compatible
+API](https://freshrss.github.io/FreshRSS/en/developers/06_Fever_API.html), not the
+Google Reader-compatible one, since it covers everything feedpaper needs (unread posts,
+content, marking as read) with a simpler request/response shape.
+
+### Changing credentials
+
+To change your credentials, edit the relevant lines in the file. Or delete the file,
+and feedpaper prompts you for new ones on the next run — first asking which service to
+use.
 
 ### Excluding blogs
 
@@ -32,4 +67,4 @@ exclude = neal.fun
 
 feedpaper matches these titles case-insensitively against your subscribed blogs.
 `feedpaper --edit-excludes` lets you pick them from a checklist instead. Excluded
-blogs stay unread on Feedbin.
+blogs stay unread on Feedbin or FreshRSS.

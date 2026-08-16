@@ -5,25 +5,32 @@ what text ends up in each chapter, and why.
 
 ## The partial-feed problem
 
-Feedbin gives every entry a `content` field, but its completeness depends on the
-publisher. Some blogs syndicate the whole article. Others ship only a teaser—a
-first paragraph and a "Read more" link—expecting you to open the site. If the tool
-naively used `content`, those posts would land in the newspaper truncated.
+Both Feedbin and FreshRSS give every entry a `content` field, but its completeness
+depends on the publisher. Some blogs syndicate the whole article. Others ship only a
+teaser—a first paragraph and a "Read more" link—expecting you to open the site. If the
+tool naively used `content`, those posts would land in the newspaper truncated.
 
 ## Prefer inline content, fall back to extraction
 
-So `feedpaper` prefers the inline `content` and only reaches for a fallback when
-that content looks incomplete. The fallback is Feedbin's own full-text extraction:
-every entry carries an `extracted_content_url`—a pre-signed endpoint backed by
-Mercury Parser that fetches the original page and returns cleaned full-text HTML.
-Because Feedbin already does this server-side, the tool never scrapes anything
-itself.
+So `feedpaper` prefers the inline content and only reaches for a fallback when it looks
+incomplete. That fallback is only available on Feedbin: every entry carries an
+`extracted_content_url`—a pre-signed endpoint backed by Mercury Parser that fetches the
+original page and returns cleaned full-text HTML. Because Feedbin already does this
+server-side, the tool never scrapes anything itself.
+
+FreshRSS has no per-request equivalent of `extracted_content_url`, so on FreshRSS
+feedpaper always uses the inline content as-is. If a feed reads truncated in your
+newspaper, FreshRSS's own [website-scraping
+rules](https://freshrss.github.io/FreshRSS/en/users/11_website_scraping.html), set up
+per-feed on the FreshRSS side, are the way to fix it—whatever they produce lands in
+`content` before feedpaper ever sees the entry.
 
 The decision, per post:
 
-1. Take the inline `content`.
-2. If it's missing or looks truncated, fetch the extracted content instead.
-3. If extraction fails or comes back empty, keep whatever inline content there was.
+1. Take the inline content.
+2. On Feedbin, if it's missing or looks truncated, fetch the extracted content instead.
+3. If extraction fails, comes back empty, or isn't available (FreshRSS), keep whatever
+   inline content there was.
 
 ## What "looks truncated" means
 

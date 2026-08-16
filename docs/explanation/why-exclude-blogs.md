@@ -14,10 +14,10 @@ but some feeds don't belong in a newspaper you read on an e-reader.
 
 ## What excluding does
 
-When you exclude a blog, feedpaper leaves its posts out of the ePub and keeps them unread
-on Feedbin. You don't lose anything: you still see those posts in Feedbin and can read
-them where they suit you, usually your phone. Your newspaper stays focused on the
-long-form writing that reads well on the e-reader.
+When you exclude a blog, feedpaper leaves its posts out of the ePub and keeps them
+unread on your service. You don't lose anything: you still see those posts in Feedbin or
+FreshRSS and can read them where they suit you, usually your phone. Your newspaper stays
+focused on the long-form writing that reads well on the e-reader.
 
 Pick the blogs to exclude with `feedpaper --edit-excludes`. See
 [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md).

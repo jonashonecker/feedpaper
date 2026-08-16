@@ -1,4 +1,4 @@
-"""Build an ePub newspaper from unread Feedbin blog posts."""
+"""Build an ePub newspaper from unread Feedbin or FreshRSS blog posts."""
 
 from importlib.metadata import PackageNotFoundError, version
 

@@ -13,8 +13,8 @@ into instead.
 
 ## Remove your credentials and settings
 
-feedpaper keeps your email, password, and excluded blogs in `~/.config/feedpaper/`.
-Delete that folder to remove them:
+feedpaper keeps your credentials and excluded blogs in `~/.config/feedpaper/`. Delete
+that folder to remove them:
 
 ```bash
 rm -rf ~/.config/feedpaper
