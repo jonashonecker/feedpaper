@@ -4,6 +4,9 @@ In this tutorial you'll install the `feedpaper` command with Homebrew, ready to 
 your first newspaper in the
 [next tutorial](/docs/tutorial/build-your-first-newspaper.md).
 
+Using Windows? Follow [Install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
+instead.
+
 ## Before you start
 
 You need an Apple Silicon Mac, a [Feedbin](https://feedbin.com) account, and

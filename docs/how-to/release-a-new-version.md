@@ -14,14 +14,15 @@ Publish a new feedpaper version so Homebrew users get it with `brew upgrade`.
    git push origin vX.Y.Z
    ```
 
-The `Release` GitHub Actions workflow does the rest: it builds the macOS bundle,
-attaches `feedpaper-macos.tar.gz` to the GitHub release, and updates the Homebrew tap
-formula automatically with the `TAP_GITHUB_TOKEN` secret.
+The `Release` GitHub Actions workflow does the rest: it builds macOS and Windows
+bundles, attaches them to the GitHub release, and updates the Homebrew tap formula
+automatically with the `TAP_GITHUB_TOKEN` secret.
 
 ## Verify
 
 - The **Actions** tab shows the `Release` workflow finishing green.
-- The release page lists `feedpaper-macos.tar.gz`.
+- The release page lists `feedpaper-macos.tar.gz` and
+  `feedpaper-windows-x64.zip`.
 - The `homebrew-tap` repository has a new `github-actions[bot]` commit bumping the formula.
 - `brew update && brew upgrade feedpaper` installs the new version.
 
