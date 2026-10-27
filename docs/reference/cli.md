@@ -16,7 +16,7 @@ feedpaper [-h] [--version] [-o OUTPUT] [--keep-unread]
 | `-o`, `--output DIR` | Directory where feedpaper writes the ePub, created if it doesn't exist. | `.` |
 | `--keep-unread` | Build the ePub without marking any posts as read. | off |
 | `--edit-excludes` | Pick blogs to exclude from a checklist and save them to `config`. Needs an interactive terminal. | — |
-| `--list-feeds` | Print subscribed feeds as `feed_id<TAB>title`, sorted by title, then exit. | — |
+| `--list-feeds` | Print the titles of your subscribed feeds, sorted by title, then exit. | — |
 
 See [Configuration files](/docs/reference/configuration.md) for the `config` file
 format.
