@@ -38,7 +38,7 @@ every post.
 The heuristic can occasionally be wrong—a genuinely short post might trigger an
 unnecessary extraction, and an unusually worded teaser might slip through. It aims
 for cheap, predictable behaviour rather than perfection. The thresholds live in
-`feedpaper/content.py`, and adjusting them is easy. A future refinement could let you
+`feedpaper/feedbin.py`, and adjusting them is easy. A future refinement could let you
 mark specific blogs as "always extract."
 
 ## Related

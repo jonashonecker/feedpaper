@@ -4,15 +4,13 @@ import argparse
 import sys
 from dataclasses import replace
 
-import requests
-
 from feedpaper import __version__
+from feedpaper.client import ClientError
 from feedpaper.config import ConfigError, config_path, load_config, save_config
-from feedpaper.content import resolve_content
-from feedpaper.epub_builder import build_epub
 from feedpaper.exclusions import is_excluded, normalize_titles
-from feedpaper.feedbin import FeedbinClient, FeedbinError
+from feedpaper.feedbin import FeedbinClient
 from feedpaper.interactive import choose_excludes
+from feedpaper.render import render_epub
 
 
 def _parse_args(argv):
@@ -39,22 +37,31 @@ def _parse_args(argv):
     parser.add_argument(
         "--list-feeds",
         action="store_true",
-        help="List your subscribed feeds (id and title) and exit.",
+        help="List the titles of your subscribed feeds and exit.",
     )
     return parser.parse_args(argv)
 
 
-def _edit_excludes(config, feeds_by_id) -> int:
+def _edit_excludes(config, feed_titles) -> int:
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         print("error: --edit-excludes needs an interactive terminal.", file=sys.stderr)
         return 1
-    selected = choose_excludes(feeds_by_id, config.excluded)
+    selected = choose_excludes(feed_titles, config.excluded)
     if selected is None:
         print("Cancelled; config unchanged.")
         return 0
     save_config(replace(config, excluded=tuple(selected)))
     print(f"Saved {len(selected)} excluded blog(s) to {config_path()}.")
     return 0
+
+
+def _report_progress(done, total, title) -> None:
+    if done == 0:
+        if total:
+            print(f"Found {total} unread post(s).")
+            print("Resolving content...")
+        return
+    print(f"  [{done}/{total}] {title}")
 
 
 def main(argv=None) -> int:
@@ -72,72 +79,58 @@ def main(argv=None) -> int:
         client.verify()
         print("Authenticated with Feedbin.")
 
-        feeds_by_id = client.get_feeds()
-
         if args.list_feeds:
-            for feed_id, title in sorted(
-                feeds_by_id.items(), key=lambda kv: (kv[1] or "").lower()
-            ):
-                print(f"{feed_id}\t{title}")
+            for title in client.feed_titles():
+                print(title)
             return 0
 
         if args.edit_excludes:
-            return _edit_excludes(config, feeds_by_id)
+            return _edit_excludes(config, client.feed_titles())
 
-        excluded_titles = normalize_titles(config.excluded)
-
-        unread_ids = client.get_unread_ids()
-        if not unread_ids:
+        articles = client.fetch_unread(progress=_report_progress)
+        if not articles:
             print("No unread posts. Nothing to do.")
             return 0
-        print(f"Found {len(unread_ids)} unread post(s).")
 
-        entries = client.get_entries(unread_ids)
-
+        excluded_titles = normalize_titles(config.excluded)
         included, excluded = [], []
-        for entry in entries:
-            feed_title = feeds_by_id.get(entry.get("feed_id"), "")
-            (excluded if is_excluded(feed_title, excluded_titles) else included).append(
-                entry
+        for article in articles:
+            target = (
+                excluded
+                if is_excluded(article.feed_title, excluded_titles)
+                else included
             )
+            target.append(article)
 
         if excluded:
-            ex_titles = sorted(
-                {feeds_by_id.get(e.get("feed_id"), "") for e in excluded}
-            )
+            ex_titles = sorted({a.feed_title for a in excluded if a.feed_title})
             print(
                 f"Excluding {len(excluded)} post(s) from: "
-                f"{', '.join(t for t in ex_titles if t)} (kept unread)."
+                f"{', '.join(ex_titles)} (kept unread)."
             )
 
         if not included:
             print("All unread posts are from excluded feeds. Nothing to build.")
             return 0
 
-        print("Resolving content...")
-        for i, entry in enumerate(included, 1):
-            entry["_resolved_content"] = resolve_content(client, entry)
-            print(f"  [{i}/{len(included)}] {entry.get('title') or '(untitled)'}")
-
         print("Building ePub...")
-        out_path = build_epub(included, feeds_by_id, client.session, args.output)
+        out_path = render_epub(included, args.output)
         print(f"Wrote {out_path}")
-    except (FeedbinError, requests.RequestException) as exc:
+    except ClientError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    read_ids = [e["id"] for e in included]
     if args.keep_unread:
         print(
             f"Skipped marking as read (--keep-unread). "
-            f"{len(read_ids)} post(s) stay unread."
+            f"{len(included)} post(s) stay unread."
         )
         return 0
 
     try:
-        client.mark_as_read(read_ids)
-        print(f"Marked {len(read_ids)} post(s) as read on Feedbin.")
-    except (FeedbinError, requests.RequestException) as exc:
+        client.mark_as_read(included)
+        print(f"Marked {len(included)} post(s) as read on Feedbin.")
+    except ClientError as exc:
         print(f"warning: ePub built but failed to mark as read: {exc}", file=sys.stderr)
         return 1
 
