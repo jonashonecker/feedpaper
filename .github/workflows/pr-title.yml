@@ -1,0 +1,24 @@
+name: PR title
+
+# Pull requests are squashed, so a PR's title becomes its commit on main and has to be a
+# conventional commit. No action from outside: a pattern is all this needs.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  conventional:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that the title is a conventional commit
+        # The title comes in through the environment, so a crafted title can't become code.
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! printf '%s' "$TITLE" | grep -Eq '^(feat|fix|docs|refactor|test|chore|ci|build|perf|revert)(\([a-z0-9-]+\))?!?: [^ ].*$'; then
+            echo "\"$TITLE\" isn't a conventional commit, such as \"feat: let the user switch the language by mail\"."
+            echo "The title becomes the commit on main, since pull requests are squashed."
+            exit 1
+          fi
