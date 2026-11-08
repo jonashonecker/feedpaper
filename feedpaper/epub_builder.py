@@ -67,9 +67,11 @@ def _guess_ext(url, content_type) -> str:
     return ".jpg"
 
 
-def _download_image(session, url):
+def _download_image(url):
+    # A bare request on purpose: the Feedbin session carries the user's credentials,
+    # and requests sends session auth to every host, not only to Feedbin.
     try:
-        resp = session.get(url, timeout=_IMAGE_TIMEOUT)
+        resp = requests.get(url, timeout=_IMAGE_TIMEOUT)
         resp.raise_for_status()
         content_type = resp.headers.get("Content-Type", "").split(";")[0].strip()
         return resp.content, content_type
@@ -77,7 +79,7 @@ def _download_image(session, url):
         return None, None
 
 
-def _embed_images(book, soup, session, state):
+def _embed_images(book, soup, state):
     """Download <img> sources, add them to the book, rewrite src to local path.
 
     ``state`` carries {"urls": {src: filename}, "counter": int} across chapters
@@ -88,7 +90,7 @@ def _embed_images(book, soup, session, state):
         if not src or src.startswith("data:"):
             continue
         if src not in state["urls"]:
-            data, content_type = _download_image(session, src)
+            data, content_type = _download_image(src)
             if not data:
                 img.decompose()
                 continue
@@ -107,12 +109,12 @@ def _embed_images(book, soup, session, state):
         img["src"] = state["urls"][src]
 
 
-def _build_chapter(book, entry, feed_title, session, index, style_item, state):
+def _build_chapter(book, entry, feed_title, index, style_item, state):
     title = entry.get("title") or "(untitled)"
     clean = sanitize_html(entry.get("_resolved_content", ""))
 
     soup = BeautifulSoup(clean, "lxml")
-    _embed_images(book, soup, session, state)
+    _embed_images(book, soup, state)
     body_html = soup.body.decode_contents() if soup.body else str(soup)
 
     chapter = epub.EpubHtml(
@@ -123,7 +125,7 @@ def _build_chapter(book, entry, feed_title, session, index, style_item, state):
     return chapter
 
 
-def build_epub(entries, feeds_by_id, session, out_dir, title=None) -> Path:
+def build_epub(entries, feeds_by_id, out_dir, title=None) -> Path:
     today = date.today()
     title = title or f"feedpaper {today.isoformat()}"
 
@@ -149,7 +151,7 @@ def build_epub(entries, feeds_by_id, session, out_dir, title=None) -> Path:
     for index, entry in enumerate(ordered):
         feed_title = feeds_by_id.get(entry.get("feed_id"), "")
         chapter = _build_chapter(
-            book, entry, feed_title, session, index, style_item, state
+            book, entry, feed_title, index, style_item, state
         )
         book.add_item(chapter)
         chapters.append(chapter)

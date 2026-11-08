@@ -120,7 +120,7 @@ def main(argv=None) -> int:
             print(f"  [{i}/{len(included)}] {entry.get('title') or '(untitled)'}")
 
         print("Building ePub...")
-        out_path = build_epub(included, feeds_by_id, client.session, args.output)
+        out_path = build_epub(included, feeds_by_id, args.output)
         print(f"Wrote {out_path}")
     except (FeedbinError, requests.RequestException) as exc:
         print(f"error: {exc}", file=sys.stderr)
