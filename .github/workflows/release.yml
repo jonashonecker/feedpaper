@@ -24,9 +24,9 @@ jobs:
             asset: feedpaper-windows-x64.zip
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -48,7 +48,7 @@ jobs:
         run: Compress-Archive -Path dist\feedpaper -DestinationPath feedpaper-windows-x64.zip
 
       - name: Save bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bundle-${{ runner.os }}
           path: ${{ matrix.asset }}
@@ -58,7 +58,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: bundle-*
           merge-multiple: true
@@ -88,7 +88,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Check out the Homebrew tap
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: jonashonecker/homebrew-tap
           token: ${{ secrets.TAP_GITHUB_TOKEN }}
