@@ -3,7 +3,7 @@
 ## `config`
 
 feedpaper stores your Feedbin credentials in `~/.config/feedpaper/config`, or in
-`$XDG_CONFIG_HOME/feedpaper/config` when that variable is set. On Windows this is
+`$XDG_CONFIG_HOME/feedpaper/config` when you set that variable. On Windows this is
 `%USERPROFILE%\.config\feedpaper\config`. It creates the file for you on first run,
 and you can edit it by hand later:
 

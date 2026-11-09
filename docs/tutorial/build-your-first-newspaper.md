@@ -47,7 +47,7 @@ Make sure you have a few unread posts in Feedbin.
    named `feedpaper-YYYY-MM-DD.epub` into the current folder.
 
 2. Open the `.epub` on your computer with an ePub reader, such as Books on macOS. You'll
-   see one chapter per post, newest first, each with a byline and its images.
+   see one chapter per post, newest first. Each has a byline and its images.
 
 3. Copy the `.epub` to your e-reader, for example the XTeink X4, the way you normally
    copy files to it, and open it there. You're reading your first newspaper.

@@ -5,8 +5,8 @@ GitHub Actions workflow runs them on every pull request.
 
 ## Steps
 
-1. In a source checkout, install feedpaper with the dev tools, pytest and the pyright
-   type checker:
+1. In a source checkout, install feedpaper with its dev tools: pytest and the pyright
+   type checker.
 
    ```bash
    pip install -e ".[dev]"

@@ -4,7 +4,7 @@ This guide shows how to install feedpaper from source in PowerShell and build yo
 newspaper with it. A virtual environment keeps feedpaper and its Python packages apart
 from the rest of your system.
 
-You need Python 3.10 or newer, Git and a Feedbin account. The commands use Python 3.12.
+You need Python 3.10 or newer, Git, and a Feedbin account. The commands use Python 3.12.
 
 ## Install
 
