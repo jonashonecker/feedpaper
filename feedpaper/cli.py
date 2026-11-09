@@ -96,14 +96,14 @@ def main(argv=None) -> int:
 
         included, excluded = [], []
         for entry in entries:
-            feed_title = feeds_by_id.get(entry.get("feed_id"), "")
+            feed_title = feeds_by_id.get(entry.get("feed_id", 0), "")
             (excluded if is_excluded(feed_title, excluded_titles) else included).append(
                 entry
             )
 
         if excluded:
             ex_titles = sorted(
-                {feeds_by_id.get(e.get("feed_id"), "") for e in excluded}
+                {feeds_by_id.get(e.get("feed_id", 0), "") for e in excluded}
             )
             print(
                 f"Excluding {len(excluded)} post(s) from: "
