@@ -32,7 +32,8 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Check the docs
         # Every finding becomes an annotation; only errors fail the check. GitHub shows only
-        # the first few annotations of each level, so the job summary lists all of them.
+        # the first few annotations of each level, so the job summary lists all of them, and
+        # the vale-findings artifact has them as JSON for tools and scripts.
         run: |
           vale --version
           # Downloading the packages sometimes times out, so try up to three times.
@@ -53,3 +54,10 @@ jobs:
               "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\|")) |"' vale.json
           } >> "$GITHUB_STEP_SUMMARY"
           test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
+      - name: Keep the findings
+        if: always() && hashFiles('vale.json') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: vale-findings
+          path: vale.json
+          retention-days: 14
