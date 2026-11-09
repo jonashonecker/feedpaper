@@ -5,7 +5,7 @@ import sys
 from dataclasses import replace
 
 from feedpaper import __version__
-from feedpaper.client import ClientError
+from feedpaper.client import Client, ClientError
 from feedpaper.config import ConfigError, config_path, load_config, save_config
 from feedpaper.exclusions import is_excluded, normalize_titles
 from feedpaper.feedbin import FeedbinClient
@@ -55,12 +55,7 @@ def _edit_excludes(config, feed_titles) -> int:
     return 0
 
 
-def _report_progress(done, total, title) -> None:
-    if done == 0:
-        if total:
-            print(f"Found {total} unread post(s).")
-            print("Resolving content...")
-        return
+def _report_progress(done: int, total: int, title: str) -> None:
     print(f"  [{done}/{total}] {title}")
 
 
@@ -73,7 +68,7 @@ def main(argv=None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    client = FeedbinClient(config.email, config.password)
+    client: Client = FeedbinClient(config.email, config.password)
 
     try:
         client.verify()
@@ -87,10 +82,11 @@ def main(argv=None) -> int:
         if args.edit_excludes:
             return _edit_excludes(config, client.feed_titles())
 
-        articles = client.fetch_unread(progress=_report_progress)
+        articles = client.list_unread()
         if not articles:
             print("No unread posts. Nothing to do.")
             return 0
+        print(f"Found {len(articles)} unread post(s).")
 
         excluded_titles = normalize_titles(config.excluded)
         included, excluded = [], []
@@ -112,6 +108,9 @@ def main(argv=None) -> int:
         if not included:
             print("All unread posts are from excluded feeds. Nothing to build.")
             return 0
+
+        print("Resolving content...")
+        included = client.resolve(included, progress=_report_progress)
 
         print("Building ePub...")
         out_path = render_epub(included, args.output)

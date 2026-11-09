@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
+from dataclasses import replace
 from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
 
-from feedpaper.client import Article, ClientError
+from feedpaper.client import Article, ClientError, Progress
 
 API_BASE = "https://api.feedbin.com/v2"
 ENTRIES_CHUNK = 100  # max ids per /entries.json request
@@ -63,6 +65,8 @@ class FeedbinClient:
         self.session = requests.Session()
         self.session.auth = (email, password)
         self.session.headers.update({"Content-Type": "application/json"})
+        # Article id -> Feedbin's signed full-text extraction URL, from list_unread.
+        self._extraction_urls: dict[str, str] = {}
 
     # --- Client interface ---
 
@@ -79,37 +83,57 @@ class FeedbinClient:
         titles = {title for title in self._subscriptions().values() if title}
         return sorted(titles, key=str.lower)
 
-    def fetch_unread(self, progress=None) -> list[Article]:
-        """Fetch every unread post and resolve its content."""
+    def list_unread(self) -> list[Article]:
+        """Every unread post, with the inline content Feedbin sends along."""
         entry_ids = self._unread_ids()
         entries = self._entries(entry_ids) if entry_ids else []
         feeds = self._subscriptions() if entries else {}
 
-        total = len(entries)
-        if progress:
-            progress(0, total, "")
-
         articles = []
-        for done, entry in enumerate(entries, 1):
-            title = entry.get("title") or "(untitled)"
-            articles.append(
-                Article(
-                    id=str(entry.get("id", "")),
-                    title=title,
-                    html=self._resolve_content(entry),
-                    feed_title=feeds.get(entry.get("feed_id"), ""),
-                    url=entry.get("url"),
-                    author=entry.get("author"),
-                    published=_parse_published(entry.get("published")),
-                )
+        self._extraction_urls = {}
+        for entry in entries:
+            article = Article(
+                id=str(entry.get("id", "")),
+                title=entry.get("title") or "(untitled)",
+                html=entry.get("content") or "",
+                feed_title=feeds.get(entry.get("feed_id", 0), ""),
+                url=entry.get("url"),
+                author=entry.get("author"),
+                published=_parse_published(entry.get("published")),
             )
-            if progress:
-                progress(done, total, title)
+            extraction_url = entry.get("extracted_content_url")
+            if extraction_url:
+                self._extraction_urls[article.id] = extraction_url
+            articles.append(article)
         return articles
 
-    def mark_as_read(self, articles) -> None:
+    def resolve(
+        self, articles: Sequence[Article], progress: Progress | None = None
+    ) -> list[Article]:
+        """Swap truncated inline content for Feedbin's full-text extraction.
+
+        The inline content wins unless it's missing or looks like a teaser; the
+        extraction is only fetched then, and only used when it has content.
+        """
+        resolved = []
+        for done, article in enumerate(articles, 1):
+            if _looks_truncated(article.html):
+                extracted = self._extracted_content(
+                    self._extraction_urls.get(article.id)
+                )
+                if extracted and extracted.strip():
+                    article = replace(article, html=extracted)
+            resolved.append(article)
+            if progress:
+                progress(done, len(articles), article.title)
+        return resolved
+
+    def mark_as_read(self, articles: Iterable[Article]) -> None:
         """Mark the given articles as read (in chunks of 1000)."""
-        ids = [int(article.id) for article in articles]
+        try:
+            ids = [int(article.id) for article in articles]
+        except ValueError as exc:
+            raise FeedbinError(f"Not a Feedbin entry id: {exc}") from exc
         for chunk in _chunked(ids, UNREAD_CHUNK):
             self._request(
                 "DELETE", "unread_entries.json", json={"unread_entries": list(chunk)}
@@ -168,17 +192,3 @@ class FeedbinClient:
             return resp.json().get("content")
         except (requests.RequestException, ValueError):
             return None
-
-    def _resolve_content(self, entry) -> str:
-        """Pick the best available content for an entry.
-
-        Prefers the inline ``content``; falls back to Feedbin's full-content
-        extraction only when the inline content is missing or looks truncated.
-        """
-        inline = entry.get("content") or ""
-        if not _looks_truncated(inline):
-            return inline
-        extracted = self._extracted_content(entry.get("extracted_content_url"))
-        if extracted and extracted.strip():
-            return extracted
-        return inline

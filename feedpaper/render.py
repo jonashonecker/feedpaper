@@ -2,13 +2,20 @@ from __future__ import annotations
 
 import html as html_module
 import mimetypes
+from collections.abc import Callable, Iterable, Sequence
 from datetime import date
 from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from ebooklib import epub
+
+from feedpaper.client import Article
+
+# Downloads one image: (data, media type), or None when it can't be fetched.
+ImageFetcher = Callable[[str], tuple[bytes, str] | None]
 
 STYLE = """
 body { font-family: Georgia, serif; line-height: 1.5; margin: 5%; }
@@ -26,8 +33,14 @@ _STRIP_TAGS = ["script", "style", "iframe", "noscript", "object", "embed", "form
 _IMAGE_TIMEOUT = 30
 
 
-def _escape(text) -> str:
+def _escape(text: str | None) -> str:
     return html_module.escape(text or "")
+
+
+def _src(img: Tag) -> str:
+    """An <img>'s ``src`` as a string; empty when it's missing."""
+    value = img.get("src")
+    return value if isinstance(value, str) else ""
 
 
 def sanitize_html(html: str) -> str:
@@ -60,12 +73,12 @@ def image_urls(html: str) -> list[str]:
     soup = BeautifulSoup(sanitize_html(html), "lxml")
     return [
         src
-        for src in (img.get("src", "") for img in soup.find_all("img"))
+        for src in (_src(img) for img in soup.find_all("img"))
         if src and not src.startswith("data:")
     ]
 
 
-def _byline(article) -> str:
+def _byline(article: Article) -> str:
     parts = [_escape(part) for part in (article.author, article.feed_title) if part]
     if article.published:
         parts.append(article.published.strftime("%Y-%m-%d"))
@@ -76,7 +89,7 @@ def _byline(article) -> str:
     return f'<p class="byline">{meta}{source}</p>'
 
 
-def render_chapter(article, images) -> str:
+def render_chapter(article: Article, images: dict[str, str]) -> str:
     """Render one article as chapter XHTML.
 
     ``images`` maps an image URL to its path inside the book; an <img> whose
@@ -84,7 +97,7 @@ def render_chapter(article, images) -> str:
     """
     soup = BeautifulSoup(sanitize_html(article.html), "lxml")
     for img in soup.find_all("img"):
-        src = img.get("src", "")
+        src = _src(img)
         if not src or src.startswith("data:"):
             continue
         local = images.get(src)
@@ -98,7 +111,7 @@ def render_chapter(article, images) -> str:
     return f"<h1>{_escape(title)}</h1>{_byline(article)}{body}"
 
 
-def _guess_ext(url, media_type) -> str:
+def _guess_ext(url: str, media_type: str) -> str:
     if media_type:
         ext = mimetypes.guess_extension(media_type)
         if ext:
@@ -109,7 +122,7 @@ def _guess_ext(url, media_type) -> str:
     return ".jpg"
 
 
-def http_fetch_image(url):
+def http_fetch_image(url: str) -> tuple[bytes, str] | None:
     """Download an image. Returns ``(data, media_type)``, or None on failure.
 
     Deliberately a bare request: the feed client's session carries the user's
@@ -124,13 +137,15 @@ def http_fetch_image(url):
     return resp.content, media_type
 
 
-def _sort_key(article):
+def _sort_key(article: Article) -> tuple[int, float]:
     # Newest first; articles without a date sort last.
     published = article.published
     return (1, published.timestamp()) if published else (0, 0.0)
 
 
-def _collect_images(articles, fetch_image):
+def _collect_images(
+    articles: Iterable[Article], fetch_image: ImageFetcher
+) -> tuple[dict[str, str], list[epub.EpubImage]]:
     """Download each distinct image once; return {url: path} and the book items."""
     urls = dict.fromkeys(url for article in articles for url in image_urls(article.html))
 
@@ -154,9 +169,19 @@ def _collect_images(articles, fetch_image):
     return images, items
 
 
-def render_epub(articles, out_dir, fetch_image=http_fetch_image, title=None) -> Path:
-    """Render the given articles into an ePub and return the path written."""
-    today = date.today()
+def render_epub(
+    articles: Sequence[Article],
+    out_dir: str | Path,
+    fetch_image: ImageFetcher = http_fetch_image,
+    title: str | None = None,
+    today: date | None = None,
+) -> Path:
+    """Render the given articles into an ePub and return the path written.
+
+    ``today`` dates the title, the book's identifier and the file name; it
+    defaults to the current date.
+    """
+    today = today or date.today()
     title = title or f"feedpaper {today.isoformat()}"
 
     book = epub.EpubBook()
