@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Protocol, runtime_checkable
 
 
-class ClientError(Exception):
+class FeedServiceError(Exception):
     """Raised when a feed service cannot answer a request."""
 
 
@@ -16,7 +16,7 @@ class Article:
 
     ``html`` is the best content known so far: what the service returned in
     bulk after ``list_unread``, and the final content after ``resolve``. ``id``
-    is service-local and opaque to everyone but the client that handed it out.
+    is service-local and opaque to everyone but the adapter that handed it out.
     """
 
     id: str
@@ -33,11 +33,11 @@ Progress = Callable[[int, int, str], None]
 
 
 @runtime_checkable
-class Client(Protocol):
+class FeedService(Protocol):
     """What feedpaper needs from a feed service.
 
     Fetching is split in two steps, so feedpaper can drop the posts it won't
-    use before a client spends requests on their content:
+    use before an adapter spends requests on their content:
 
     1. ``list_unread`` returns every unread post with the content the service
        hands out in bulk, which is cheap.
@@ -46,7 +46,7 @@ class Client(Protocol):
        returns the articles unchanged.
 
     Implementations keep their service's quirks to themselves and raise
-    ``ClientError`` (or a subclass) when a request fails.
+    ``FeedServiceError`` (or a subclass) when a request fails.
     """
 
     def verify(self) -> None:

@@ -5,7 +5,7 @@ import pytest
 import requests
 from requests.adapters import BaseAdapter
 
-from feedpaper.feedbin import API_BASE, FeedbinClient, FeedbinError
+from feedpaper.feedbin import API_BASE, FeedbinAdapter, FeedbinError
 
 CREDENTIALS = "Basic " + base64.b64encode(b"me@example.com:hunter2").decode()
 EXTRACTION_URL = "https://extract.feedbin.com/parser/feedbin/abc?base64_url=xyz"
@@ -40,14 +40,14 @@ def feedbin(routes=None):
     http = requests.Session()
     http.mount("https://", stub)
     http.mount("http://", stub)
-    return FeedbinClient("me@example.com", "hunter2", http=http), stub
+    return FeedbinAdapter("me@example.com", "hunter2", http=http), stub
 
 
 def test_api_requests_carry_the_credentials():
-    client, stub = feedbin()
+    adapter, stub = feedbin()
 
-    client.verify()
-    client.list_unread()
+    adapter.verify()
+    adapter.list_unread()
 
     assert [r.url for r in stub.sent] == [
         f"{API_BASE}/authentication.json",
@@ -58,7 +58,7 @@ def test_api_requests_carry_the_credentials():
 
 def test_the_http_session_never_holds_credentials():
     http = requests.Session()
-    FeedbinClient("me@example.com", "hunter2", http=http)
+    FeedbinAdapter("me@example.com", "hunter2", http=http)
 
     assert http.auth is None
     assert "Authorization" not in http.headers
@@ -66,7 +66,7 @@ def test_the_http_session_never_holds_credentials():
 
 def test_the_full_text_fetch_goes_without_credentials():
     long_teaser = "<p>Short. Read more</p>"
-    client, stub = feedbin(
+    adapter, stub = feedbin(
         {
             f"{API_BASE}/unread_entries.json": (200, [1]),
             f"{API_BASE}/entries.json": (
@@ -79,7 +79,7 @@ def test_the_full_text_fetch_goes_without_credentials():
         }
     )
 
-    (article,) = client.resolve(client.list_unread())
+    (article,) = adapter.resolve(adapter.list_unread())
 
     assert article.html == "<p>The whole post</p>"
     (extraction,) = [r for r in stub.sent if not (r.url or "").startswith(API_BASE)]
@@ -88,7 +88,7 @@ def test_the_full_text_fetch_goes_without_credentials():
 
 @pytest.mark.parametrize("body", [[], ["not", "a", "dict"], {"content": None}, b"not json"])
 def test_an_unusable_full_text_keeps_the_inline_content(body):
-    client, _ = feedbin(
+    adapter, _ = feedbin(
         {
             f"{API_BASE}/unread_entries.json": (200, [1]),
             f"{API_BASE}/entries.json": (
@@ -98,13 +98,13 @@ def test_an_unusable_full_text_keeps_the_inline_content(body):
         }
     )
 
-    (article,) = client.resolve(client.list_unread())
+    (article,) = adapter.resolve(adapter.list_unread())
 
     assert article.html == "<p>Teaser</p>"
 
 
 def test_a_server_error_becomes_a_feedbin_error():
-    client, _ = feedbin({f"{API_BASE}/unread_entries.json": (500, {})})
+    adapter, _ = feedbin({f"{API_BASE}/unread_entries.json": (500, {})})
 
     with pytest.raises(FeedbinError):
-        client.list_unread()
+        adapter.list_unread()

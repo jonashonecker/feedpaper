@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from ebooklib import epub
 
-from feedpaper.client import Article
+from feedpaper.service import Article
 from feedpaper.placeholder import VIDEO_PNG
 
 # Downloads one image: (data, media type), or None when it can't be fetched.

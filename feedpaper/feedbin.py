@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from feedpaper.client import Article, ClientError, Progress
+from feedpaper.service import Article, FeedServiceError, Progress
 
 API_BASE = "https://api.feedbin.com/v2"
 ENTRIES_CHUNK = 100  # max ids per /entries.json request
@@ -25,7 +25,7 @@ _TRUNCATION_MARKERS = (
 _MIN_CONTENT_CHARS = 500
 
 
-class FeedbinError(ClientError):
+class FeedbinError(FeedServiceError):
     """Raised when a Feedbin API call fails."""
 
 
@@ -57,8 +57,8 @@ def _parse_published(raw):
         return None
 
 
-class FeedbinClient:
-    """Reads unread posts from Feedbin. Implements ``client.Client``."""
+class FeedbinAdapter:
+    """Reads unread posts from Feedbin. Implements ``service.FeedService``."""
 
     def __init__(
         self,
@@ -77,7 +77,7 @@ class FeedbinClient:
         # Article id -> Feedbin's signed full-text extraction URL, from list_unread.
         self._extraction_urls: dict[str, str] = {}
 
-    # --- Client interface ---
+    # --- FeedService interface ---
 
     def verify(self) -> None:
         """Check credentials via the authentication endpoint."""

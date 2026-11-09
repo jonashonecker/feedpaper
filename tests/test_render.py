@@ -8,7 +8,7 @@ import requests
 from ebooklib import ITEM_DOCUMENT, ITEM_IMAGE, epub
 
 from feedpaper import cli
-from feedpaper.client import Article
+from feedpaper.service import Article
 from feedpaper.config import Config
 from feedpaper.feedbin import API_BASE
 from feedpaper.placeholder import VIDEO_PNG
@@ -390,7 +390,7 @@ def test_image_hosts_never_see_the_feedbin_credentials(tmp_path, image_host, mon
 
     Up to 0.1.3, images were downloaded through the authenticated Feedbin
     session, and every image host received the user's email and password.
-    This runs the whole command with the real Feedbin client; only the Feedbin
+    This runs the whole command with the real Feedbin adapter; only the Feedbin
     API itself is faked, and images come from a local server.
     """
     entries = [
