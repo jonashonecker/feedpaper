@@ -1,29 +1,27 @@
-# Uninstall feedpaper
+# How to uninstall feedpaper
 
-Remove feedpaper and its saved settings.
+This guide shows how to remove feedpaper and its saved settings.
 
-## Remove the program
+## Steps
 
-```bash
-brew uninstall feedpaper
-```
+1. Remove the program. With Homebrew:
 
-If you installed it manually, delete the checkout or the folder you moved the binary
-into instead.
+   ```bash
+   brew uninstall feedpaper
+   ```
 
-On Windows, delete the cloned `feedpaper` folder or the standalone bundle folder.
+   For a manual install or a standalone bundle, delete the cloned `feedpaper` folder or
+   the bundle's folder instead.
 
-## Remove your credentials and settings
+2. Delete `~/.config/feedpaper/`, where feedpaper keeps your email, password and
+   excluded blogs. On macOS and Linux:
 
-feedpaper keeps your email, password, and excluded blogs in `~/.config/feedpaper/`.
-Delete that folder to remove them:
+   ```bash
+   rm -rf ~/.config/feedpaper
+   ```
 
-```bash
-rm -rf ~/.config/feedpaper
-```
+   On Windows, in PowerShell:
 
-On Windows PowerShell:
-
-```powershell
-Remove-Item -Recurse -Force "$HOME\.config\feedpaper"
-```
+   ```powershell
+   Remove-Item -Recurse -Force "$HOME\.config\feedpaper"
+   ```
