@@ -4,8 +4,9 @@ import html as html_module
 import mimetypes
 from collections.abc import Callable, Iterable, Sequence
 from datetime import date
+import re
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +14,7 @@ from bs4.element import Tag
 from ebooklib import epub
 
 from feedpaper.client import Article
+from feedpaper.placeholder import VIDEO_PNG
 
 # Downloads one image: (data, media type), or None when it can't be fetched.
 ImageFetcher = Callable[[str], tuple[bytes, str] | None]
@@ -25,12 +27,40 @@ h1 { font-size: 1.5em; line-height: 1.2; margin: 0 0 0.2em; }
 img { max-width: 100%; height: auto; }
 pre { white-space: pre-wrap; word-wrap: break-word; }
 blockquote { margin-left: 1em; padding-left: 1em; border-left: 3px solid #ccc; }
+figure { margin: 1em 0; }
+figcaption { color: #555; font-size: 0.85em; }
 """
 
 # Tags removed entirely, including their content.
 _STRIP_TAGS = ["script", "style", "iframe", "noscript", "object", "embed", "form"]
 
 _IMAGE_TIMEOUT = 30
+
+# Videos can't play in an ePub, so each one becomes a figure: a thumbnail that
+# links to the video, and a caption with the same link. YouTube videos get their
+# real thumbnail; every other video gets the placeholder image, which also
+# stands in when a thumbnail fails to download.
+VIDEO_PLACEHOLDER = "images/video.png"
+_PLACEHOLDER_SRC = "feedpaper:video"  # never downloaded; render_chapter swaps it
+_THUMBNAIL_CLASS = "video-thumbnail"
+
+_YOUTUBE_HOSTS = {
+    "youtube.com",
+    "m.youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+}
+_YOUTUBE_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+# Embedded players from other video sites; any other <iframe> is dropped.
+_VIDEO_HOSTS = _YOUTUBE_HOSTS | {
+    "player.vimeo.com",
+    "vimeo.com",
+    "dailymotion.com",
+    "player.twitch.tv",
+    "fast.wistia.net",
+    "loom.com",
+    "streamable.com",
+}
 
 
 def _escape(text: str | None) -> str:
@@ -43,9 +73,91 @@ def _src(img: Tag) -> str:
     return value if isinstance(value, str) else ""
 
 
+def _host(url: str) -> str:
+    host = urlparse(url).hostname or ""
+    return host.removeprefix("www.")
+
+
+def _absolute(url: str) -> str | None:
+    """``url`` as an absolute http(s) URL, or None if it isn't one."""
+    if url.startswith("//"):
+        url = f"https:{url}"
+    return url if urlparse(url).scheme in ("http", "https") else None
+
+
+def youtube_id(url: str) -> str | None:
+    """The video id in a YouTube watch, short, embed or youtu.be URL."""
+    parsed = urlparse(_absolute(url) or "")
+    host = (parsed.hostname or "").removeprefix("www.")
+    if host not in _YOUTUBE_HOSTS:
+        return None
+    if host == "youtu.be":
+        candidate = parsed.path.strip("/")
+    elif parsed.path == "/watch":
+        candidate = parse_qs(parsed.query).get("v", [""])[0]
+    else:
+        parts = parsed.path.strip("/").split("/")
+        candidate = parts[1] if len(parts) == 2 and parts[0] in ("embed", "shorts", "live", "v") else ""
+    return candidate if _YOUTUBE_ID.match(candidate) else None
+
+
+def _video_figure(soup: BeautifulSoup, url: str | None, thumbnail: str | None) -> Tag:
+    link = _absolute(url) if url else None
+    video_id = youtube_id(link) if link else None
+    if video_id:
+        link = f"https://www.youtube.com/watch?v={video_id}"
+        thumbnail = thumbnail or f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+    if link and _host(link) == "player.vimeo.com":
+        link = f"https://vimeo.com/{urlparse(link).path.rstrip('/').rsplit('/', 1)[-1]}"
+
+    figure = soup.new_tag("figure", attrs={"class": "video"})
+    image = soup.new_tag(
+        "img",
+        attrs={
+            "class": _THUMBNAIL_CLASS,
+            "src": _absolute(thumbnail or "") or _PLACEHOLDER_SRC,
+            "alt": "Video",
+        },
+    )
+    caption = soup.new_tag("figcaption")
+    if link:
+        image_link = soup.new_tag("a", href=link)
+        image_link.append(image)
+        figure.append(image_link)
+        caption_link = soup.new_tag("a", href=link)
+        caption_link.string = f"▶ Watch the video on {_host(link)}"
+        caption.append(caption_link)
+    else:
+        figure.append(image)
+        caption.string = "▶ A video that can't be shown here"
+    figure.append(caption)
+    return figure
+
+
+def _replace_videos(soup: BeautifulSoup) -> None:
+    """Swap embedded players and <video> elements for a linked thumbnail."""
+    for iframe in soup.find_all("iframe"):
+        src = _absolute(_src(iframe))
+        if src and _host(src) in _VIDEO_HOSTS:
+            iframe.replace_with(_video_figure(soup, src, None))
+    for video in soup.find_all("video"):
+        url = _src(video)
+        if not url:
+            source = video.find("source")
+            url = _src(source) if isinstance(source, Tag) else ""
+        poster = video.get("poster")
+        video.replace_with(
+            _video_figure(soup, url or None, poster if isinstance(poster, str) else None)
+        )
+
+
 def sanitize_html(html: str) -> str:
-    """Remove unsafe / noisy elements, keep readable markup and <img> tags."""
+    """Remove unsafe / noisy elements, keep readable markup and <img> tags.
+
+    Videos become a linked thumbnail first, since an ePub can't play them.
+    """
     soup = BeautifulSoup(html or "", "lxml")
+    _replace_videos(soup)
 
     for tag in soup(_STRIP_TAGS):
         tag.decompose()
@@ -74,7 +186,7 @@ def image_urls(html: str) -> list[str]:
     return [
         src
         for src in (_src(img) for img in soup.find_all("img"))
-        if src and not src.startswith("data:")
+        if src and not src.startswith("data:") and src != _PLACEHOLDER_SRC
     ]
 
 
@@ -101,6 +213,8 @@ def render_chapter(article: Article, images: dict[str, str]) -> str:
         if not src or src.startswith("data:"):
             continue
         local = images.get(src)
+        if local is None and _THUMBNAIL_CLASS in img.get_attribute_list("class"):
+            local = VIDEO_PLACEHOLDER
         if local is None:
             img.decompose()
         else:
@@ -214,6 +328,16 @@ def render_epub(
         chapter.add_link(href=style_item.file_name, rel="stylesheet", type="text/css")
         book.add_item(chapter)
         chapters.append(chapter)
+
+    if any(f'src="{VIDEO_PLACEHOLDER}"' in chapter.content for chapter in chapters):
+        book.add_item(
+            epub.EpubImage(
+                uid="video_placeholder",
+                file_name=VIDEO_PLACEHOLDER,
+                media_type="image/png",
+                content=VIDEO_PNG,
+            )
+        )
 
     book.toc = tuple(chapters)
     book.add_item(epub.EpubNcx())

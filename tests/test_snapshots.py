@@ -26,6 +26,8 @@ FEATURES = sorted(
 IMAGES = {
     "https://images.example/photo.jpg": "images/img_1.jpg",
     "https://images.example/chart.png": "images/img_2.png",
+    "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg": "images/img_3.jpg",
+    "https://images.example/poster.jpg": "images/img_4.jpg",
 }
 
 
