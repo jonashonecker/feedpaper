@@ -10,7 +10,7 @@ can't do what their posts rely on.
   an e-ink reader you can't follow the links, so the chapter is just a dead list.
 - **Media posts.** Video and podcast feeds carry almost no readable text. The content is
   a player you'd open on your phone or computer. feedpaper shows each video as a
-  thumbnail with a link, which tells you a video is there but can't play it.
+  thumbnail with a link, so you know a video is there, but you can't play it.
 - **Script-heavy posts.** Some posts rely on JavaScript to render their content.
   feedpaper strips scripts for a clean, offline read, so these can come out sparse.
 
