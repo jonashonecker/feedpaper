@@ -1,56 +1,69 @@
-# Install feedpaper manually
+# How to install feedpaper manually
 
-Install feedpaper from source with Python instead of Homebrew.
+This guide shows how to install feedpaper from source with Python instead of Homebrew.
 
 You need Python 3.10 or newer and Git.
 
-## Get the code and install it
+## On macOS and Linux
 
-### macOS and Linux
+1. Get the code:
 
-```bash
-git clone https://github.com/jonashonecker/feedpaper.git
-cd feedpaper
-python3 -m venv .venv
-source .venv/bin/activate
-pip install .
-```
+   ```bash
+   git clone https://github.com/jonashonecker/feedpaper.git
+   cd feedpaper
+   ```
 
-### Windows PowerShell
+2. Create a virtual environment, activate it and install feedpaper into it:
 
-```powershell
-git clone https://github.com/jonashonecker/feedpaper.git
-cd feedpaper
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install .
-```
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install .
+   ```
 
-On macOS and Linux, this puts a `feedpaper` command on your `PATH` while the virtual
-environment is active. The Windows commands avoid activation and invoke feedpaper
-directly, so they also work when PowerShell's execution policy blocks activation
-scripts.
+3. Check the install:
 
-## Run it
+   ```bash
+   feedpaper --help
+   ```
 
-On macOS and Linux:
+The `feedpaper` command is on your `PATH` while the virtual environment is active.
 
-```bash
-feedpaper --help
-```
+## On Windows
 
-On Windows:
+1. Get the code in PowerShell:
 
-```powershell
-.\.venv\Scripts\feedpaper.exe --help
-```
+   ```powershell
+   git clone https://github.com/jonashonecker/feedpaper.git
+   cd feedpaper
+   ```
 
-The first real run prompts for your Feedbin email and password and saves them to
+2. Create a virtual environment and install feedpaper into it:
+
+   ```powershell
+   py -3.12 -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install .
+   ```
+
+3. Check the install:
+
+   ```powershell
+   .\.venv\Scripts\feedpaper.exe --help
+   ```
+
+These commands call the virtual environment's programs directly instead of activating
+it, so they also work when PowerShell's execution policy blocks activation scripts.
+
+## Next
+
+The first real run asks for your Feedbin email and password and saves them to
 `~/.config/feedpaper/config`, the same as the Homebrew install.
 
 ## Related
 
-- The easy way: [Install feedpaper](/docs/tutorial/install-feedpaper.md)
-- Windows instructions:
-  [Install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
-- Package a standalone binary:
-  [Build a standalone binary](/docs/how-to/build-a-binary.md)
+- [Install feedpaper](/docs/tutorial/install-feedpaper.md) is the tutorial for the
+  Homebrew install.
+- [How to install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md) goes
+  from install to first newspaper on Windows.
+- [How to build a standalone binary](/docs/how-to/build-a-binary.md) packages feedpaper so
+  it runs without Python.
