@@ -1,0 +1,38 @@
+name: Docs
+
+# Lint the docs with Vale. No path filter: the check is required, and a required check
+# that never starts on a PR without doc changes would block that PR from merging.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # A fixed version, so a check never depends on looking up the latest release.
+  VALE_VERSION: 3.25.1
+
+jobs:
+  vale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Vale
+        # Signed in with the workflow's token, which GitHub limits less than anonymous downloads.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "v${VALE_VERSION}" --repo vale-cli/vale --pattern "vale_${VALE_VERSION}_Linux_64-bit.tar.gz" --dir "$RUNNER_TEMP"
+          tar -xzf "$RUNNER_TEMP/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" -C "$RUNNER_TEMP" vale
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Check the docs
+        # Every finding becomes an annotation; only errors fail the check.
+        run: |
+          vale --version
+          vale sync
+          vale --output=JSON README.md docs > vale.json || true
+          jq -r 'to_entries[] | .key as $file | .value[] |
+            "::\(if .Severity == "error" then "error" elif .Severity == "warning" then "warning" else "notice" end) file=\($file),line=\(.Line),col=\(.Span[0])::[\(.Check)] \(.Message)"' vale.json
+          test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
