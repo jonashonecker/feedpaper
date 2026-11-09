@@ -65,6 +65,6 @@ jobs:
             echo "| Level | Where | Rule | Message |"
             echo "| --- | --- | --- | --- |"
             jq -r 'to_entries[] | .key as $file | .value[] |
-              "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\\\|")) |"' vale.json
+              "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\|")) |"' vale.json
           } >> "$GITHUB_STEP_SUMMARY"
           test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
