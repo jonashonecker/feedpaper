@@ -58,3 +58,16 @@ def image_host(monkeypatch):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--update-snapshots",
+        action="store_true",
+        help="Rewrite the expected output of the snapshot tests instead of comparing.",
+    )
+
+
+@pytest.fixture
+def update_snapshots(request) -> bool:
+    return bool(request.config.getoption("--update-snapshots"))
