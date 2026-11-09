@@ -11,12 +11,15 @@ from feedpaper import cli
 from feedpaper.client import Article
 from feedpaper.config import Config
 from feedpaper.feedbin import API_BASE
+from feedpaper.placeholder import VIDEO_PNG
 from feedpaper.render import (
+    VIDEO_PLACEHOLDER,
     http_fetch_image,
     image_urls,
     render_chapter,
     render_epub,
     sanitize_html,
+    youtube_id,
 )
 
 from .conftest import PNG
@@ -283,6 +286,89 @@ class TestRenderEpub:
 
         (image,) = book.get_items_of_type(ITEM_IMAGE)
         assert image.file_name.endswith(extension)
+
+
+YOUTUBE_EMBED = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>'
+YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+
+
+class TestVideos:
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "https://m.youtube.com/watch?v=dQw4w9WgXcQ&t=42",
+            "https://youtu.be/dQw4w9WgXcQ",
+            "https://www.youtube.com/embed/dQw4w9WgXcQ?start=10",
+            "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+            "//www.youtube.com/embed/dQw4w9WgXcQ",
+            "https://www.youtube.com/shorts/dQw4w9WgXcQ",
+            "https://www.youtube.com/live/dQw4w9WgXcQ",
+        ],
+    )
+    def test_finds_the_youtube_id(self, url):
+        assert youtube_id(url) == "dQw4w9WgXcQ"
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "https://www.youtube.com/",
+            "https://www.youtube.com/watch?v=short",
+            "https://www.youtube.com/embed/dQw4w9WgXcQ/extra",
+            "https://www.youtube.com/@channel",
+            "https://notyoutube.com/embed/dQw4w9WgXcQ",
+            "https://vimeo.com/76979871",
+        ],
+    )
+    def test_ignores_urls_without_a_youtube_video(self, url):
+        assert youtube_id(url) is None
+
+    def test_downloads_the_youtube_thumbnail(self, tmp_path):
+        fetcher = FakeFetcher("image/jpeg")
+
+        _, book = build(tmp_path, [article(html=YOUTUBE_EMBED)], fetcher)
+
+        assert fetcher.calls == [YOUTUBE_THUMBNAIL]
+        (image,) = book.get_items_of_type(ITEM_IMAGE)
+        assert f'src="{image.file_name}"' in chapter_html(book)
+        assert 'href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"' in chapter_html(book)
+
+    def test_falls_back_to_the_placeholder_when_the_thumbnail_fails(self, tmp_path):
+        _, book = build(tmp_path, [article(html=YOUTUBE_EMBED)], lambda url: None)
+
+        (image,) = book.get_items_of_type(ITEM_IMAGE)
+        assert image.file_name == VIDEO_PLACEHOLDER
+        assert image.get_content() == VIDEO_PNG
+        assert f'src="{VIDEO_PLACEHOLDER}"' in chapter_html(book)
+
+    def test_other_video_sites_get_the_placeholder_without_a_download(self, tmp_path):
+        fetcher = FakeFetcher()
+        html = '<iframe src="https://player.vimeo.com/video/76979871"></iframe>'
+
+        _, book = build(tmp_path, [article(html=html)], fetcher)
+
+        assert fetcher.calls == []
+        assert [i.file_name for i in book.get_items_of_type(ITEM_IMAGE)] == [
+            VIDEO_PLACEHOLDER
+        ]
+        assert 'href="https://vimeo.com/76979871"' in chapter_html(book)
+
+    def test_adds_the_placeholder_once_for_several_videos(self, tmp_path):
+        html = '<video src="https://media.example/a.mp4"></video>'
+
+        _, book = build(
+            tmp_path, [article(id="1", html=html), article(id="2", html=html)]
+        )
+
+        assert len(list(book.get_items_of_type(ITEM_IMAGE))) == 1
+
+    def test_books_without_videos_have_no_placeholder(self, tmp_path):
+        _, book = build(tmp_path, [article()])
+
+        assert list(book.get_items_of_type(ITEM_IMAGE)) == []
+
+    def test_other_iframes_are_still_dropped(self):
+        assert sanitize_html('<iframe src="https://maps.example/embed"></iframe>') == ""
 
 
 class TestHttpFetchImage:
