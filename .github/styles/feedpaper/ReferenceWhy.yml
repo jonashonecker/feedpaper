@@ -1,0 +1,16 @@
+# Reference describes; it doesn't justify. "Only its owner can read it", not "because it
+# holds keys". The reason belongs in an explanation. The counterpart of the Diátaxis
+# package's Explanation.Why, which asks explanations for exactly these words.
+extends: existence
+message: "'%s' explains why. Reference describes; put the reason in an explanation."
+link: https://diataxis.fr/reference/#the-language-of-reference
+level: warning
+ignorecase: true
+tokens:
+  - because
+  - so that
+  - the reason
+  - in order to
+  - which is why
+  - this is why
+  - ", so \\w+ (?:can|can't|doesn't|don't|isn't|won't|stays|keeps)"
