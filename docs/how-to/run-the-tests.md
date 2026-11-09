@@ -26,7 +26,7 @@ account or a network connection. `pyright` checks the types in `feedpaper/` and 
 ## Note
 
 The workflow runs both on Python 3.10, the oldest version feedpaper supports, and on
-3.12, the version the release bundles are built with.
+3.12, the version the release workflow builds the bundles with.
 
 ## Related
 
