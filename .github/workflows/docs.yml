@@ -33,7 +33,7 @@ jobs:
       - name: Check the docs
         # Every finding becomes an annotation; only errors fail the check. GitHub shows only
         # the first few annotations of each level, so the job summary lists all of them, and
-        # the vale-findings artifact has them as JSON for tools and scripts.
+        # so does the log, where tools reading it through the API can find them.
         run: |
           vale --version
           # Downloading the packages sometimes times out, so try up to three times.
@@ -53,11 +53,7 @@ jobs:
             jq -r 'to_entries[] | .key as $file | .value[] |
               "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\|")) |"' vale.json
           } >> "$GITHUB_STEP_SUMMARY"
+          echo "Vale findings (level, file:line, rule, message):"
+          jq -r 'to_entries[] | .key as $file | .value[] |
+            "  \(.Severity)\t\($file):\(.Line)\t\(.Check)\t\(.Message)"' vale.json
           test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
-      - name: Keep the findings
-        if: always() && hashFiles('vale.json') != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: vale-findings
-          path: vale.json
-          retention-days: 14
