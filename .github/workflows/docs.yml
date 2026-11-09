@@ -1,12 +1,14 @@
 name: Docs
 
-# Lint the docs with Vale. On pull requests Vale only runs when the docs or their style
-# changed. That's decided inside the job, not with a path filter: the check is required,
-# and a path filter would leave it waiting forever on every PR that doesn't touch docs.
+# Lint the docs with Vale when the docs or their style change. Not a required check: Vale
+# downloads its packages from GitHub releases without signing in, and those downloads
+# fail now and then for reasons outside this repo.
 on:
   push:
     branches: [main]
+    paths: [README.md, "docs/**", .vale.ini, ".github/styles/**", .github/workflows/docs.yml]
   pull_request:
+    paths: [README.md, "docs/**", .vale.ini, ".github/styles/**", .github/workflows/docs.yml]
 
 permissions:
   contents: read
@@ -20,23 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          # The merge commit and its first parent, the base branch, to diff against.
-          fetch-depth: 2
-      - name: Look for doc changes
-        id: changes
-        if: github.event_name == 'pull_request'
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-        run: |
-          if git diff --name-only "$BASE" HEAD | grep -Eq '^(README\.md$|docs/|\.vale\.ini$|\.github/styles/|\.github/workflows/docs\.yml$)'; then
-            echo "docs=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "docs=false" >> "$GITHUB_OUTPUT"
-            echo "No doc changes, so Vale doesn't run."
-          fi
       - name: Install Vale
-        if: steps.changes.outputs.docs != 'false'
         # Signed in with the workflow's token, which GitHub limits less than anonymous downloads.
         env:
           GH_TOKEN: ${{ github.token }}
@@ -45,12 +31,29 @@ jobs:
           tar -xzf "$RUNNER_TEMP/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" -C "$RUNNER_TEMP" vale
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Check the docs
-        if: steps.changes.outputs.docs != 'false'
-        # Every finding becomes an annotation; only errors fail the check.
+        # Every finding becomes an annotation; only errors fail the check. GitHub shows only
+        # the first few annotations of each level, so the job summary lists all of them, and
+        # so does the log, where tools reading it through the API can find them.
         run: |
           vale --version
-          vale sync
+          # Downloading the packages sometimes times out, so try up to three times.
+          for attempt in 1 2 3; do
+            vale sync && break
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep 10
+          done
           vale --output=JSON README.md docs > vale.json || true
           jq -r 'to_entries[] | .key as $file | .value[] |
             "::\(if .Severity == "error" then "error" elif .Severity == "warning" then "warning" else "notice" end) file=\($file),line=\(.Line),col=\(.Span[0])::[\(.Check)] \(.Message)"' vale.json
+          {
+            echo "## Vale: $(jq '[.[][]] | length' vale.json) finding(s)"
+            echo
+            echo "| Level | Where | Rule | Message |"
+            echo "| --- | --- | --- | --- |"
+            jq -r 'to_entries[] | .key as $file | .value[] |
+              "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\|")) |"' vale.json
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Vale findings (level, file:line, rule, message):"
+          jq -r 'to_entries[] | .key as $file | .value[] |
+            "  \(.Severity)\t\($file):\(.Line)\t\(.Check)\t\(.Message)"' vale.json
           test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
