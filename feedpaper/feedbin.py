@@ -60,14 +60,20 @@ def _parse_published(raw):
 class FeedbinClient:
     """Reads unread posts from Feedbin. Implements ``client.Client``."""
 
-    def __init__(self, email, password, timeout=DEFAULT_TIMEOUT):
+    def __init__(
+        self,
+        email: str,
+        password: str,
+        http: requests.Session | None = None,
+        timeout: float = DEFAULT_TIMEOUT,
+    ):
+        """``http`` sends every request; tests pass one with a stubbed transport."""
         self.timeout = timeout
-        # Credentials go on each Feedbin API request, not on the session: requests
-        # sends session auth to any host, so anything else sent through the session
-        # would carry them too.
+        # Credentials go on each Feedbin API request, never on the HTTP session:
+        # requests sends session auth to any host, so the full-text fetch or
+        # anything else sent through the session would carry them too.
         self._auth = (email, password)
-        self.session = requests.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
+        self._http = http or requests.Session()
         # Article id -> Feedbin's signed full-text extraction URL, from list_unread.
         self._extraction_urls: dict[str, str] = {}
 
@@ -146,7 +152,7 @@ class FeedbinClient:
 
     def _request(self, method, path, *, check=True, **kwargs):
         try:
-            resp = self.session.request(
+            resp = self._http.request(
                 method,
                 f"{API_BASE}/{path}",
                 auth=self._auth,
@@ -188,14 +194,16 @@ class FeedbinClient:
     def _extracted_content(self, url) -> str | None:
         """Fetch Feedbin's full-content extraction for a pre-signed URL.
 
-        The extracted_content_url is already HMAC-signed, so it needs no
-        auth. Returns the extracted HTML content, or None on any failure.
+        The extracted_content_url is already HMAC-signed, so it goes without
+        credentials. Returns the extracted HTML content, or None on any failure.
         """
         if not url:
             return None
         try:
-            resp = requests.get(url, timeout=self.timeout)
+            resp = self._http.get(url, timeout=self.timeout)
             resp.raise_for_status()
-            return resp.json().get("content")
+            data = resp.json()
         except (requests.RequestException, ValueError):
             return None
+        content = data.get("content") if isinstance(data, dict) else None
+        return content if isinstance(content, str) else None

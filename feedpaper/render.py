@@ -239,8 +239,8 @@ def _guess_ext(url: str, media_type: str) -> str:
 def http_fetch_image(url: str) -> tuple[bytes, str] | None:
     """Download an image. Returns ``(data, media_type)``, or None on failure.
 
-    Deliberately a bare request: the feed client's session carries the user's
-    credentials, which have no business reaching arbitrary image hosts.
+    Deliberately a bare request, apart from any feed service's HTTP session, so
+    nothing meant for the service can reach arbitrary image hosts.
     """
     try:
         resp = requests.get(url, timeout=_IMAGE_TIMEOUT)
