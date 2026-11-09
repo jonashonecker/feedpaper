@@ -16,12 +16,12 @@ e-reader, so you read your blogs on e-ink instead of a screen.
 >
 > Practical step-by-step guides for the more experienced user
 
-- [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
-- [Install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
-- [Uninstall feedpaper](/docs/how-to/uninstall-feedpaper.md)
-- [Build a standalone binary](/docs/how-to/build-a-binary.md)
-- [Run the tests](/docs/how-to/run-the-tests.md)
-- [Release a new version](/docs/how-to/release-a-new-version.md)
+- [How to install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [How to install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
+- [How to uninstall feedpaper](/docs/how-to/uninstall-feedpaper.md)
+- [How to build a standalone binary](/docs/how-to/build-a-binary.md)
+- [How to run the tests](/docs/how-to/run-the-tests.md)
+- [How to release a new version](/docs/how-to/release-a-new-version.md)
 
 ## 🔍 Reference
 >

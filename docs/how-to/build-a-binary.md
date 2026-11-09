@@ -1,54 +1,64 @@
-# Build a standalone binary
+# How to build a standalone binary
 
-Produce a standalone `feedpaper` build for your machine, so it can run without a Python
-install.
+This guide shows how to build a standalone `feedpaper` for your machine that runs without
+a Python install.
 
-## Build it on macOS or Linux
+A PyInstaller build only runs on the operating system where you built it.
 
-From a source checkout with the build extra installed:
+## On macOS or Linux
 
-```bash
-pip install -e ".[build]"
-pyinstaller --onedir --name feedpaper feedpaper/__main__.py
-```
+1. In a source checkout, install feedpaper with the build extra:
 
-PyInstaller writes the bundle to `dist/feedpaper/`: the `feedpaper` launcher plus an
-`_internal/` folder of libraries. Keep them together.
+   ```bash
+   pip install -e ".[build]"
+   ```
 
-Run it:
+2. Build the bundle:
 
-```bash
-./dist/feedpaper/feedpaper --help
-```
+   ```bash
+   pyinstaller --onedir --name feedpaper feedpaper/__main__.py
+   ```
 
-## Build it on Windows
+   PyInstaller writes the bundle to `dist/feedpaper/`: the `feedpaper` launcher and an
+   `_internal/` folder of libraries. Keep them together.
 
-From a source checkout in PowerShell:
+3. Run it:
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[build]"
-.\.venv\Scripts\pyinstaller.exe --onedir --name feedpaper feedpaper\__main__.py
-```
+   ```bash
+   ./dist/feedpaper/feedpaper --help
+   ```
 
-PyInstaller writes `dist\feedpaper\feedpaper.exe` and its libraries. Keep the complete
-`dist\feedpaper` folder together.
+## On Windows
 
-Run it:
+1. In a source checkout, open PowerShell and create a virtual environment with the
+   build extra:
 
-```powershell
-.\dist\feedpaper\feedpaper.exe --help
-```
+   ```powershell
+   py -3.12 -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install -e ".[build]"
+   ```
 
-feedpaper reads its configuration from `~/.config/feedpaper/config`, the same as
-running from source.
+2. Build the bundle:
 
-## Note
+   ```powershell
+   .\.venv\Scripts\pyinstaller.exe --onedir --name feedpaper feedpaper\__main__.py
+   ```
 
-A PyInstaller build only runs on the operating system where you built it. Pushing a
-version tag (`vX.Y.Z`) runs the `Release` GitHub Actions workflow, which builds macOS
-and Windows bundles and attaches both to the release.
+   PyInstaller writes `dist\feedpaper\feedpaper.exe` and its libraries. Keep the
+   whole `dist\feedpaper` folder together.
+
+3. Run it:
+
+   ```powershell
+   .\dist\feedpaper\feedpaper.exe --help
+   ```
+
+The bundle reads its configuration from `~/.config/feedpaper/config`, the same file as a
+feedpaper installed from source.
 
 ## Related
 
-- Install from source: [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [How to install feedpaper manually](/docs/how-to/install-feedpaper-manually.md) sets up
+  the source checkout.
+- [How to release a new version](/docs/how-to/release-a-new-version.md) builds macOS and
+  Windows bundles for a release in GitHub Actions.

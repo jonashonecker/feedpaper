@@ -1,31 +1,32 @@
-# Release a new version
+# How to release a new version
 
-Publish a new feedpaper version so Homebrew users get it with `brew upgrade`.
+This guide shows how to publish a new feedpaper version, so Homebrew users get it with
+`brew upgrade`.
 
 ## Steps
 
-1. Bump the version in `pyproject.toml`. The package reads it at runtime, so there's
-   nothing else to edit.
-2. Commit the bump and push `main`.
-3. Tag the release and push the tag:
+1. Bump the version in `pyproject.toml` in a pull request, and merge it. The package reads
+   the version at runtime, so there's nothing else to edit.
+2. Tag the merge commit on `main` and push the tag:
 
    ```bash
+   git checkout main && git pull
    git tag -a vX.Y.Z -m "feedpaper vX.Y.Z"
    git push origin vX.Y.Z
    ```
 
-The `Release` GitHub Actions workflow does the rest: it builds macOS and Windows
-bundles, attaches them to the GitHub release, and updates the Homebrew tap formula
-automatically with the `TAP_GITHUB_TOKEN` secret.
+   The tag starts the `Release` GitHub Actions workflow. It builds the macOS and Windows
+   bundles, attaches them to the GitHub release and updates the Homebrew tap formula
+   with the `TAP_GITHUB_TOKEN` secret.
 
-## Verify
-
-- The **Actions** tab shows the `Release` workflow finishing green.
-- The release page lists `feedpaper-macos.tar.gz` and
-  `feedpaper-windows-x64.zip`.
-- The `homebrew-tap` repository has a new `github-actions[bot]` commit bumping the formula.
-- `brew update && brew upgrade feedpaper` installs the new version.
+3. Check the result:
+   - The **Actions** tab shows the `Release` workflow finishing green.
+   - The release page lists `feedpaper-macos.tar.gz` and `feedpaper-windows-x64.zip`.
+   - The `homebrew-tap` repository has a new `github-actions[bot]` commit bumping the
+     formula.
+   - `brew update && brew upgrade feedpaper` installs the new version.
 
 ## Related
 
-- Build a bundle locally: [Build a standalone binary](/docs/how-to/build-a-binary.md)
+- [How to build a standalone binary](/docs/how-to/build-a-binary.md) builds a bundle on
+  your own machine.

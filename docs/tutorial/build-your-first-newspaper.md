@@ -6,68 +6,64 @@ your device.
 
 ## Before you start
 
-Install feedpaper first. See [Install feedpaper](/docs/tutorial/install-feedpaper.md).
-Open a terminal in the folder where you want the newspaper saved, and make sure you have
-a few unread posts in Feedbin.
+Install feedpaper first, as shown in [Install feedpaper](/docs/tutorial/install-feedpaper.md).
+Make sure you have a few unread posts in Feedbin.
 
-## Connect to Feedbin
+## Connect and choose your blogs
 
-The first time you run feedpaper, it asks for your Feedbin email and password and saves
-them to `~/.config/feedpaper/config`. Trigger that now by listing your blogs:
+1. Open a terminal in the folder where you want the newspaper saved.
 
-```bash
-feedpaper --list-feeds
-```
+2. Let's connect feedpaper to Feedbin by listing your blogs:
 
-feedpaper prompts for your email and password, keeping the password hidden, then prints
-the blogs you're subscribed to.
+   ```bash
+   feedpaper --list-feeds
+   ```
 
-## Choose which blogs to skip
+   The first time you run feedpaper, it asks for your Feedbin email and password, keeping
+   the password hidden, and saves them to `~/.config/feedpaper/config`. You'll see the
+   blogs you're subscribed to.
 
-Some blogs don't read well as an ePub: link-only newsletters, or video and podcast feeds
-you'd rather open on your phone. Pick the ones to leave out:
+3. Some blogs don't read well as an ePub, such as link-only newsletters or video and
+   podcast feeds you'd rather open on your phone. Let's leave those out:
 
-```bash
-feedpaper --edit-excludes
-```
+   ```bash
+   feedpaper --edit-excludes
+   ```
 
-feedpaper shows your blogs as a checklist. Use the arrow keys to move, space to tick a
-blog you want to skip, and enter to save. Excluded blogs stay unread on Feedbin, so you
-can still read them elsewhere. You can also edit the `exclude` lines in
-`~/.config/feedpaper/config` by hand.
+   You'll see your blogs as a checklist. Use the arrow keys to move, space to tick a blog
+   you want to skip, and enter to save. Excluded blogs stay unread on Feedbin, so you
+   still find them there.
 
-For when this helps, see
-[Why excluding blogs helps](/docs/explanation/why-exclude-blogs.md).
+## Build and read the newspaper
 
-## Build the ePub
+1. For the first build, we'll add `--keep-unread`, so feedpaper creates the ePub without
+   changing anything in Feedbin:
 
-For your first build, add `--keep-unread`. It creates the ePub without changing anything
-in Feedbin:
+   ```bash
+   feedpaper --keep-unread
+   ```
 
-```bash
-feedpaper --keep-unread
-```
+   feedpaper fetches your unread posts, skips the blogs you excluded, and writes a file
+   named `feedpaper-YYYY-MM-DD.epub` into the current folder.
 
-feedpaper fetches your unread posts, skips the blogs you excluded, and writes a file
-named `feedpaper-YYYY-MM-DD.epub` into the current directory.
+2. Open the `.epub` on your computer with an ePub reader, such as Books on macOS. You'll
+   see one chapter per post, newest first. Each has a byline and its images.
 
-## Open the newspaper
+3. Copy the `.epub` to your e-reader, for example the XTeink X4, the way you normally
+   copy files to it, and open it there. You're reading your first newspaper.
 
-Open the `.epub` on your computer with any ePub reader. On macOS, Books works. You'll
-see one chapter per post, newest first. Each post has a byline and inline images.
+## Make it a habit
 
-## Copy it to your e-reader
+1. From now on, run feedpaper without `--keep-unread`:
 
-Transfer the `.epub` to your e-reader, for example the XTeink X4, the way you normally
-copy files, and open it. You're reading your first newspaper.
+   ```bash
+   feedpaper
+   ```
 
-## Do a real build
+   You'll get the newspaper again, and feedpaper marks the included posts as read in
+   Feedbin. Next time, only what's new ends up in the newspaper.
 
-Now run it without `--keep-unread`:
+## What's next
 
-```bash
-feedpaper
-```
-
-This builds the newspaper again and marks the included posts as read in Feedbin, so next
-time you only get what's new.
+[Why excluding blogs helps](/docs/explanation/why-exclude-blogs.md) explains which blogs
+are worth leaving out.
