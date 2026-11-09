@@ -1,7 +1,8 @@
 # Why excluding blogs helps
 
 feedpaper turns every unread post into a chapter. That works well for long-form writing,
-but some feeds don't belong in a newspaper you read on an e-reader.
+but some feeds don't belong in a newspaper you read on an e-reader, because an e-reader
+can't do what their posts rely on.
 
 ## Feeds that read badly on an e-reader
 
