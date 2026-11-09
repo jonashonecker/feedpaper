@@ -46,11 +46,25 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Check the docs
         if: steps.changes.outputs.docs != 'false'
-        # Every finding becomes an annotation; only errors fail the check.
+        # Every finding becomes an annotation; only errors fail the check. GitHub shows only
+        # the first few annotations of each level, so the job summary lists all of them.
         run: |
           vale --version
-          vale sync
+          # Downloading the packages sometimes times out, so try up to three times.
+          for attempt in 1 2 3; do
+            vale sync && break
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep 10
+          done
           vale --output=JSON README.md docs > vale.json || true
           jq -r 'to_entries[] | .key as $file | .value[] |
             "::\(if .Severity == "error" then "error" elif .Severity == "warning" then "warning" else "notice" end) file=\($file),line=\(.Line),col=\(.Span[0])::[\(.Check)] \(.Message)"' vale.json
+          {
+            echo "## Vale: $(jq '[.[][]] | length' vale.json) finding(s)"
+            echo
+            echo "| Level | Where | Rule | Message |"
+            echo "| --- | --- | --- | --- |"
+            jq -r 'to_entries[] | .key as $file | .value[] |
+              "| \(.Severity) | `\($file):\(.Line)` | \(.Check) | \(.Message | gsub("\\|"; "\\\\|")) |"' vale.json
+          } >> "$GITHUB_STEP_SUMMARY"
           test "$(jq '[.[][] | select(.Severity == "error")] | length' vale.json)" -eq 0
