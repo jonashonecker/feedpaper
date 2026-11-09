@@ -13,7 +13,14 @@ dependencies = [
 
 [project.optional-dependencies]
 build = ["pyinstaller>=6.0"]
-dev = ["pytest>=8.0", "pyright>=1.1.400"]
+dev = [
+    "pytest>=8.0",
+    "pyright>=1.1.400",
+    # Fixed for the snapshot tests: other versions may serialize HTML slightly
+    # differently. Dependabot proposes updates, and the snapshots show what changed.
+    "beautifulsoup4==4.15.0",
+    "lxml==6.1.3",
+]
 
 [project.scripts]
 feedpaper = "feedpaper.cli:main"
