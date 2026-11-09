@@ -1,10 +1,11 @@
 # Install feedpaper
 
-In this tutorial you'll install the `feedpaper` command with Homebrew, ready to build
-your first newspaper in the
+In this tutorial you'll install the `feedpaper` command with Homebrew. We'll then check
+that it works, so you're ready to build your first newspaper in the
 [next tutorial](/docs/tutorial/build-your-first-newspaper.md).
 
-Using Windows? Follow [Install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
+Using Windows? Follow
+[How to install feedpaper on Windows](/docs/how-to/install-feedpaper-on-windows.md)
 instead.
 
 ## Before you start
@@ -12,19 +13,21 @@ instead.
 You need an Apple Silicon Mac, a [Feedbin](https://feedbin.com) account, and
 [Homebrew](https://brew.sh).
 
-## Install with Homebrew
+## Install and check
 
-```bash
-brew install jonashonecker/tap/feedpaper
-```
+1. Open a terminal and install feedpaper from its Homebrew tap:
 
-## Check the install
+   ```bash
+   brew install jonashonecker/tap/feedpaper
+   ```
 
-```bash
-feedpaper --help
-```
+2. Let's check the install:
 
-You'll see the usage message listing the available options. Your install works.
+   ```bash
+   feedpaper --help
+   ```
+
+   You'll see the usage message listing the available options. Your install works.
 
 ## What's next
 
@@ -32,4 +35,4 @@ Continue with
 [Build your first newspaper](/docs/tutorial/build-your-first-newspaper.md).
 
 Prefer not to use Homebrew? See
-[Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md).
+[How to install feedpaper manually](/docs/how-to/install-feedpaper-manually.md).

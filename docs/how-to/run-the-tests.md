@@ -1,46 +1,53 @@
-# Run the tests
+# How to run the tests
 
-Check a change locally the same way the `Tests` GitHub Actions workflow checks every pull
-request.
+This guide shows how to run the checks for a change locally, the same way the `Tests`
+GitHub Actions workflow runs them on every pull request, and how to update the snapshot
+tests after you change how posts render.
 
-## Install the dev tools
+## Run the checks
 
-From a source checkout:
+1. In a source checkout, install feedpaper with its dev tools: pytest and the pyright
+   type checker.
 
-```bash
-pip install -e ".[dev]"
-```
+   ```bash
+   pip install -e ".[dev]"
+   ```
 
-This installs feedpaper with pytest and the pyright type checker.
+2. Run the tests:
 
-## Run them
+   ```bash
+   pytest
+   ```
 
-```bash
-pytest
-pyright
-```
+   They cover the code in `feedpaper/` without talking to Feedbin, so they need neither
+   an account nor a network connection.
 
-`pytest` runs the tests in `tests/`. None of them talk to Feedbin, so you don't need an
-account or a network connection. `pyright` checks the types in `feedpaper/` and `tests/`.
+3. Check the types in `feedpaper/` and `tests/`:
+
+   ```bash
+   pyright
+   ```
+
+The workflow runs both on Python 3.10, the oldest version feedpaper supports, and on
+3.12, the version the release bundles use.
 
 ## Update the snapshots
 
-The snapshot tests render one small post per feature, from `tests/snapshots/<feature>.html`,
-and compare the result with `tests/snapshots/<feature>.expected.html`. After you change
-how feedpaper renders posts on purpose, rewrite the expected files:
+The snapshot tests render one small post per feature from `tests/snapshots/<feature>.html`
+and compare the result with `tests/snapshots/<feature>.expected.html`.
 
-```bash
-pytest tests/test_snapshots.py --update-snapshots
-```
+1. To cover a new feature, add its post as `tests/snapshots/<feature>.html`.
 
-Then check the diff of `tests/snapshots/` to confirm that only what you meant to change
-did. To cover a new feature, add `tests/snapshots/<feature>.html` and run the same command.
+2. Rewrite the expected files:
 
-## Note
+   ```bash
+   pytest tests/test_snapshots.py --update-snapshots
+   ```
 
-The workflow runs both on Python 3.10, the oldest version feedpaper supports, and on
-3.12, the version the release workflow builds the bundles with.
+3. Check the diff of `tests/snapshots/` and confirm that only what you meant to change
+   did.
 
 ## Related
 
-- Install from source: [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [How to install feedpaper manually](/docs/how-to/install-feedpaper-manually.md) sets up
+  the source checkout.
