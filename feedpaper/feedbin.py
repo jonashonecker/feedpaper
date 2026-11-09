@@ -62,8 +62,11 @@ class FeedbinClient:
 
     def __init__(self, email, password, timeout=DEFAULT_TIMEOUT):
         self.timeout = timeout
+        # Credentials go on each Feedbin API request, not on the session: requests
+        # sends session auth to any host, so anything else sent through the session
+        # would carry them too.
+        self._auth = (email, password)
         self.session = requests.Session()
-        self.session.auth = (email, password)
         self.session.headers.update({"Content-Type": "application/json"})
         # Article id -> Feedbin's signed full-text extraction URL, from list_unread.
         self._extraction_urls: dict[str, str] = {}
@@ -144,7 +147,11 @@ class FeedbinClient:
     def _request(self, method, path, *, check=True, **kwargs):
         try:
             resp = self.session.request(
-                method, f"{API_BASE}/{path}", timeout=self.timeout, **kwargs
+                method,
+                f"{API_BASE}/{path}",
+                auth=self._auth,
+                timeout=self.timeout,
+                **kwargs,
             )
         except requests.RequestException as exc:
             raise FeedbinError(f"Could not reach Feedbin: {exc}") from exc
