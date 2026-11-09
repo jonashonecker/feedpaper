@@ -5,10 +5,10 @@ import sys
 from dataclasses import replace
 
 from feedpaper import __version__
-from feedpaper.client import Client, ClientError
+from feedpaper.service import FeedService, FeedServiceError
 from feedpaper.config import ConfigError, config_path, load_config, save_config
 from feedpaper.exclusions import is_excluded, normalize_titles
-from feedpaper.feedbin import FeedbinClient
+from feedpaper.feedbin import FeedbinAdapter
 from feedpaper.interactive import choose_excludes
 from feedpaper.render import render_epub
 
@@ -68,21 +68,21 @@ def main(argv=None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    client: Client = FeedbinClient(config.email, config.password)
+    service: FeedService = FeedbinAdapter(config.email, config.password)
 
     try:
-        client.verify()
+        service.verify()
         print("Authenticated with Feedbin.")
 
         if args.list_feeds:
-            for title in client.feed_titles():
+            for title in service.feed_titles():
                 print(title)
             return 0
 
         if args.edit_excludes:
-            return _edit_excludes(config, client.feed_titles())
+            return _edit_excludes(config, service.feed_titles())
 
-        articles = client.list_unread()
+        articles = service.list_unread()
         if not articles:
             print("No unread posts. Nothing to do.")
             return 0
@@ -110,12 +110,12 @@ def main(argv=None) -> int:
             return 0
 
         print("Resolving content...")
-        included = client.resolve(included, progress=_report_progress)
+        included = service.resolve(included, progress=_report_progress)
 
         print("Building ePub...")
         out_path = render_epub(included, args.output)
         print(f"Wrote {out_path}")
-    except ClientError as exc:
+    except FeedServiceError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
@@ -127,9 +127,9 @@ def main(argv=None) -> int:
         return 0
 
     try:
-        client.mark_as_read(included)
+        service.mark_as_read(included)
         print(f"Marked {len(included)} post(s) as read on Feedbin.")
-    except ClientError as exc:
+    except FeedServiceError as exc:
         print(f"warning: ePub built but failed to mark as read: {exc}", file=sys.stderr)
         return 1
 

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from feedpaper.client import Article
+from feedpaper.service import Article
 from feedpaper.render import render_chapter
 
 SNAPSHOTS = Path(__file__).parent / "snapshots"
