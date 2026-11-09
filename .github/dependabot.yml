@@ -1,0 +1,30 @@
+# Dependabot opens pull requests for newer versions of the actions in our workflows and of
+# the Python packages in pyproject.toml. A release has to be 7 days old first, so a broken
+# or compromised release has time to be noticed. Titles are conventional commits, so they
+# pass the title check.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
