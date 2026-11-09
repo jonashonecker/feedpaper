@@ -1,0 +1,39 @@
+name: Tests
+
+# Run the test suite and the type checker on every pull request and on main. The type
+# checker is what catches a feed client that no longer matches the interface the rest of
+# feedpaper expects. Python 3.10 is the oldest version pyproject.toml allows; 3.12 is
+# the one the release bundles are built with.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install project with dev tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest
+
+      - name: Check types
+        run: pyright

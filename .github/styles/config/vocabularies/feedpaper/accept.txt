@@ -13,3 +13,5 @@ unread
 macOS
 Homebrew
 weiterlesen
+[Pp]yright
+pytest
