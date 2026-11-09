@@ -1,33 +1,36 @@
-# Run the tests
+# How to run the tests
 
-Check a change locally the same way the `Tests` GitHub Actions workflow checks every pull
-request.
+This guide shows how to run the checks for a change locally, the same way the `Tests`
+GitHub Actions workflow runs them on every pull request.
 
-## Install the dev tools
+## Steps
 
-From a source checkout:
+1. In a source checkout, install feedpaper with its dev tools: pytest and the pyright
+   type checker.
 
-```bash
-pip install -e ".[dev]"
-```
+   ```bash
+   pip install -e ".[dev]"
+   ```
 
-This installs feedpaper with pytest and the pyright type checker.
+2. Run the tests:
 
-## Run them
+   ```bash
+   pytest
+   ```
 
-```bash
-pytest
-pyright
-```
+   They cover the code in `feedpaper/` without talking to Feedbin, so they need neither
+   an account nor a network connection.
 
-`pytest` runs the tests in `tests/`. None of them talk to Feedbin, so you don't need an
-account or a network connection. `pyright` checks the types in `feedpaper/` and `tests/`.
+3. Check the types in `feedpaper/` and `tests/`:
 
-## Note
+   ```bash
+   pyright
+   ```
 
 The workflow runs both on Python 3.10, the oldest version feedpaper supports, and on
-3.12, the version the release workflow builds the bundles with.
+3.12, the version the release bundles use.
 
 ## Related
 
-- Install from source: [Install feedpaper manually](/docs/how-to/install-feedpaper-manually.md)
+- [How to install feedpaper manually](/docs/how-to/install-feedpaper-manually.md) sets up
+  the source checkout.
