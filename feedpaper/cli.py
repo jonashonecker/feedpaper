@@ -5,12 +5,11 @@ import sys
 from dataclasses import replace
 
 from feedpaper import __version__
-from feedpaper.service import FeedService, FeedServiceError
 from feedpaper.config import ConfigError, config_path, load_config, save_config
-from feedpaper.exclusions import is_excluded, normalize_titles
 from feedpaper.feedbin import FeedbinAdapter
 from feedpaper.interactive import choose_excludes
-from feedpaper.render import render_epub
+from feedpaper.newspaper import Reporter, build_newspaper
+from feedpaper.service import FeedService, FeedServiceError
 
 
 def _parse_args(argv):
@@ -55,8 +54,28 @@ def _edit_excludes(config, feed_titles) -> int:
     return 0
 
 
-def _report_progress(done: int, total: int, title: str) -> None:
-    print(f"  [{done}/{total}] {title}")
+class _ConsoleReporter(Reporter):
+    """Prints each step of building the newspaper as it happens."""
+
+    def found(self, count: int) -> None:
+        if count:
+            print(f"Found {count} unread post(s).")
+        else:
+            print("No unread posts. Nothing to do.")
+
+    def excluded(self, count: int, feed_titles: list[str]) -> None:
+        print(
+            f"Excluding {count} post(s) from: {', '.join(feed_titles)} (kept unread)."
+        )
+
+    def resolving(self, count: int) -> None:
+        print("Resolving content...")
+
+    def resolved(self, done: int, total: int, title: str) -> None:
+        print(f"  [{done}/{total}] {title}")
+
+    def rendering(self) -> None:
+        print("Building ePub...")
 
 
 def main(argv=None) -> int:
@@ -82,55 +101,32 @@ def main(argv=None) -> int:
         if args.edit_excludes:
             return _edit_excludes(config, service.feed_titles())
 
-        articles = service.list_unread()
-        if not articles:
-            print("No unread posts. Nothing to do.")
-            return 0
-        print(f"Found {len(articles)} unread post(s).")
-
-        excluded_titles = normalize_titles(config.excluded)
-        included, excluded = [], []
-        for article in articles:
-            target = (
-                excluded
-                if is_excluded(article.feed_title, excluded_titles)
-                else included
-            )
-            target.append(article)
-
-        if excluded:
-            ex_titles = sorted({a.feed_title for a in excluded if a.feed_title})
-            print(
-                f"Excluding {len(excluded)} post(s) from: "
-                f"{', '.join(ex_titles)} (kept unread)."
-            )
-
-        if not included:
-            print("All unread posts are from excluded feeds. Nothing to build.")
-            return 0
-
-        print("Resolving content...")
-        included = service.resolve(included, progress=_report_progress)
-
-        print("Building ePub...")
-        out_path = render_epub(included, args.output)
-        print(f"Wrote {out_path}")
+        newspaper = build_newspaper(
+            service,
+            args.output,
+            excluded_blogs=config.excluded,
+            keep_unread=args.keep_unread,
+            reporter=_ConsoleReporter(),
+        )
     except FeedServiceError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    if args.keep_unread:
-        print(
-            f"Skipped marking as read (--keep-unread). "
-            f"{len(included)} post(s) stay unread."
-        )
+    if newspaper.path is None:
+        if newspaper.found:
+            print("All unread posts are from excluded feeds. Nothing to build.")
         return 0
+    print(f"Wrote {newspaper.path}")
 
-    try:
-        service.mark_as_read(included)
-        print(f"Marked {len(included)} post(s) as read on Feedbin.")
-    except FeedServiceError as exc:
-        print(f"warning: ePub built but failed to mark as read: {exc}", file=sys.stderr)
+    count = len(newspaper.articles)
+    if newspaper.mark_error:
+        print(
+            f"warning: ePub built but failed to mark as read: {newspaper.mark_error}",
+            file=sys.stderr,
+        )
         return 1
-
+    if newspaper.marked_read:
+        print(f"Marked {count} post(s) as read on Feedbin.")
+    else:
+        print(f"Skipped marking as read (--keep-unread). {count} post(s) stay unread.")
     return 0
