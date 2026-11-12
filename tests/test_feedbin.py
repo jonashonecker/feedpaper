@@ -96,13 +96,15 @@ def test_the_full_text_fetch_goes_without_credentials():
                   "extracted_content_url": EXTRACTION_URL}],
             ),
             f"{API_BASE}/subscriptions.json": (200, [{"feed_id": 10, "title": "A Blog"}]),
-            EXTRACTION_URL.split("?")[0]: (200, {"content": "<p>The whole post</p>"}),
+            EXTRACTION_URL.split("?")[0]: (
+                200, {"content": "<p>The whole post, start to finish</p>"}
+            ),
         }
     )
 
     (article,) = adapter.resolve(adapter.list_unread())
 
-    assert article.html == "<p>The whole post</p>"
+    assert article.html == "<p>The whole post, start to finish</p>"
     (extraction,) = [r for r in stub.sent if not (r.url or "").startswith(API_BASE)]
     assert "Authorization" not in extraction.headers
 
@@ -322,3 +324,75 @@ class TestFailures:
 
         with pytest.raises(FeedbinError, match="HTTP 503"):
             adapter.mark_as_read([Article("7", "t", "", "")])
+
+
+TEASER = (
+    "<p>I don't think it's a coincidence that the two are taking off at the same "
+    "time. Quick disclosure before we go further: I'm an engineer at Blue...</p>"
+)
+
+
+class TestFullTextThatIsWorseThanTheTeaser:
+    """A post whose page gives the extraction nothing to read must keep its teaser.
+
+    Pages that load their text with JavaScript come back from the extraction as
+    markup with no text, or as a short notice. Replacing the teaser with that
+    left the chapter empty.
+    """
+
+    def resolve_teaser(self, extraction):
+        adapter, _ = feedbin(
+            {
+                f"{API_BASE}/unread_entries.json": (200, [1]),
+                f"{API_BASE}/entries.json": (
+                    200,
+                    [{"id": 1, "content": TEASER, "extracted_content_url": EXTRACTION_URL}],
+                ),
+                EXTRACTION_URL.split("?")[0]: (200, {"content": extraction}),
+            }
+        )
+        (article,) = adapter.resolve(adapter.list_unread())
+        return article.html
+
+    @pytest.mark.parametrize(
+        "extraction",
+        [
+            '<div id="app"></div>',
+            "<div><script>render()</script></div>",
+            "<p>Please enable JavaScript to view this page.</p>",
+            '<div><img src="https://blog.example/logo.png"></div>',
+        ],
+    )
+    def test_keeps_the_teaser(self, extraction):
+        assert self.resolve_teaser(extraction) == TEASER
+
+    def test_still_takes_a_full_text_that_has_more_to_read(self):
+        full_text = f"<p>{'The whole post. ' * 50}</p>"
+
+        assert self.resolve_teaser(full_text) == full_text
+
+
+class TestPostsWithoutContent:
+    def list_one(self, entry):
+        adapter, _ = feedbin(
+            {
+                f"{API_BASE}/unread_entries.json": (200, [1]),
+                f"{API_BASE}/entries.json": (200, [{"id": 1, **entry}]),
+            }
+        )
+        (article,) = adapter.list_unread()
+        return article.html
+
+    @pytest.mark.parametrize("content", [None, "", "  \n "])
+    def test_fall_back_to_the_summary(self, content):
+        html = self.list_one({"content": content, "summary": "Tom & Jerry <3 feeds"})
+
+        assert html == "<p>Tom &amp; Jerry &lt;3 feeds</p>"
+
+    def test_prefer_their_content_when_they_have_any(self):
+        html = self.list_one({"content": "<img src='a.png'>", "summary": "A photo"})
+
+        assert html == "<img src='a.png'>"
+
+    def test_stay_empty_without_a_summary(self):
+        assert self.list_one({"content": None, "summary": None}) == ""
