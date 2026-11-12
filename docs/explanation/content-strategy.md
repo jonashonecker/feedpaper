@@ -21,9 +21,15 @@ itself.
 
 The decision, per post:
 
-1. Take the inline `content`.
-2. If it's missing or looks truncated, fetch the extracted content instead.
-3. If extraction fails or comes back empty, keep whatever inline content there was.
+1. Take the inline `content`. If the entry has none, take its plain-text `summary`.
+2. If that's missing or looks truncated, fetch the extracted content.
+3. Use the extracted content only if it has more text to read than the inline
+   content. Otherwise keep the inline content.
+
+Step 3 matters because extraction doesn't always succeed. Some sites load their text
+with JavaScript, and Mercury Parser then returns markup with no text in it, or a short
+"enable JavaScript" notice. Swapping the teaser for that would leave the chapter empty.
+A teaser with a link to the source beats an empty page.
 
 ## What "looks truncated" means
 
@@ -36,7 +42,8 @@ every post.
 ## Trade-offs
 
 The heuristic can occasionally be wrong—a genuinely short post might trigger an
-unnecessary extraction, and an unusually worded teaser might slip through. It aims
+unnecessary extraction, and an unusually worded teaser might slip through. When a
+site gives the extraction nothing to read, the chapter holds only the teaser. It aims
 for cheap, predictable behaviour rather than perfection. The thresholds live in
 `feedpaper/feedbin.py`, and adjusting them is easy. A future refinement could let you
 mark specific blogs as "always extract."

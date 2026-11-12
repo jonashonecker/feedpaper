@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html as html_module
 from collections.abc import Iterable, Sequence
 from dataclasses import replace
 from datetime import datetime
@@ -34,18 +35,37 @@ def _chunked(items, size):
         yield items[i : i + size]
 
 
+def _readable_text(html: str) -> str:
+    """The text a reader would see, without scripts and styles."""
+    soup = BeautifulSoup(html or "", "lxml")
+    for tag in soup(["script", "style", "noscript"]):
+        tag.decompose()
+    return soup.get_text(strip=True)
+
+
 def _looks_truncated(html: str) -> bool:
     if not html or not html.strip():
         return True
     lowered = html.lower()
     if any(marker in lowered for marker in _TRUNCATION_MARKERS):
         return True
-    text = BeautifulSoup(html, "lxml").get_text(strip=True)
+    text = _readable_text(html)
     if len(text) < _MIN_CONTENT_CHARS:
         return True
     if text.rstrip().endswith(("…", "[…]", "[...]", "...")):
         return True
     return False
+
+
+def _inline_html(entry: dict) -> str:
+    """An entry's inline content, or its plain-text summary when it has none."""
+    content = entry.get("content")
+    if isinstance(content, str) and content.strip():
+        return content
+    summary = entry.get("summary")
+    if isinstance(summary, str) and summary.strip():
+        return f"<p>{html_module.escape(summary.strip())}</p>"
+    return ""
 
 
 def _parse_published(raw):
@@ -104,7 +124,7 @@ class FeedbinAdapter:
             article = Article(
                 id=str(entry.get("id", "")),
                 title=entry.get("title") or "(untitled)",
-                html=entry.get("content") or "",
+                html=_inline_html(entry),
                 feed_title=feeds.get(entry.get("feed_id", 0), ""),
                 url=entry.get("url"),
                 author=entry.get("author"),
@@ -121,8 +141,10 @@ class FeedbinAdapter:
     ) -> list[Article]:
         """Swap truncated inline content for Feedbin's full-text extraction.
 
-        The inline content wins unless it's missing or looks like a teaser; the
-        extraction is only fetched then, and only used when it has content.
+        The inline content wins unless it's missing or looks like a teaser. The
+        extraction is only fetched then, and only used when it has more to read
+        than the inline content: for pages that load their text with JavaScript
+        it comes back as markup without text, which would empty the chapter.
         """
         resolved = []
         for done, article in enumerate(articles, 1):
@@ -130,7 +152,9 @@ class FeedbinAdapter:
                 extracted = self._extracted_content(
                     self._extraction_urls.get(article.id)
                 )
-                if extracted and extracted.strip():
+                if extracted and len(_readable_text(extracted)) > len(
+                    _readable_text(article.html)
+                ):
                     article = replace(article, html=extracted)
             resolved.append(article)
             if progress:
