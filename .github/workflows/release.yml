@@ -64,7 +64,7 @@ jobs:
           merge-multiple: true
 
       - name: Attach bundles to the release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: feedpaper-*
 
